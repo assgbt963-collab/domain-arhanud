@@ -63,43 +63,7 @@
       border:1px solid #d8aa2b;border-radius:9px;background:#1d1d1d;color:#f1e9d0;cursor:pointer}
   .b2:hover{border-color:#f2c63d}
 </style>
-<script>
-/* ====== RPC SHIM v7.3 ====== */
-var RPC_URL = "https://script.google.com/macros/s/AKfycbzYva5UXoRGtDmT0izrG4RaM4zwpklYDnK4O0ZgoON31nUj0ZEfJsxXPd9PZryIzFPSUw/exec";
-function rpcJsonp(fn,args,ok,err){
-  var cb="_rpc"+Math.floor(Math.random()*1e9)+Date.now().toString(36);
-  var q="mode=rpc&fn="+encodeURIComponent(fn)+"&cb="+cb;
-  for(var i=0;i<args.length;i++){
-    var a=args[i];
-    if(a===undefined||a===null){ q+="&a"+(i+1)+"="; continue; }
-    q+="&a"+(i+1)+"="+encodeURIComponent(typeof a==="object"?JSON.stringify(a):String(a));
-  }
-  var s=document.createElement("script"),done=false;
-  var tm=setTimeout(function(){ if(done)return; done=true; cl(); err({message:"Koneksi waktu habis. Coba lagi."}); },25000);
-  function cl(){ clearTimeout(tm); if(s.parentNode) s.parentNode.removeChild(s); }
-  window[cb]=function(res){ if(done)return; done=true; cl(); ok(res); };
-  s.onerror=function(){ if(done)return; done=true; cl(); err({message:"Gagal menghubungi server."}); };
-  s.src=(RPC_URL||"")+(RPC_URL?"?":"")+q;
-  document.head.appendChild(s);
-}
-function __mkRun(){
-  var t={};
-  var run=new Proxy(t,{
-    get:function(o,p){
-      if(p==="withSuccessHandler") return function(f){ o._ok=f; return run; };
-      if(p==="withFailureHandler") return function(f){ o._err=f; return run; };
-      if(p==="withUserObject") return function(){ return run; };
-      return function(){ var a=[].slice.call(arguments); rpcJsonp(String(p),a,o._ok||function(){},o._err||function(e){ console.error(e); }); };
-    }
-  });
-  return run;
-}
-if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
-  window.google=window.google||{};
-  window.google.script=window.google.script||{};
-  window.google.script.run=__mkRun();
-}
-</script>
+
 <script>
 /* ====== PUSTAKA QR (lokal — tanpa layanan luar) ====== */
 //---------------------------------------------------------------------
@@ -2400,6 +2364,64 @@ var qrcode = function() {
     return qrcode;
 }));
 
+</script>
+
+<script>
+/* ====== RPC SHIM v7.7 (fetch-first, fallback JSONP) ====== */
+var RPC_URL = "https://script.google.com/macros/s/AKfycbzYva5UXoRGtDmT0izrG4RaM4zwpklYDnK4O0ZgoON31nUj0ZEfJsxXPd9PZryIzFPSUw/exec";
+function rpcQuery(fn,args,raw){
+  var q="mode=rpc"+(raw?"&raw=1":"")+"&fn="+encodeURIComponent(fn)+"&cb=_c"+Math.floor(Math.random()*1e9);
+  for(var i=0;i<args.length;i++){
+    var a=args[i];
+    if(a===undefined||a===null){ q+="&a"+(i+1)+"="; continue; }
+    q+="&a"+(i+1)+"="+encodeURIComponent(typeof a==="object"?JSON.stringify(a):String(a));
+  }
+  return q;
+}
+function rpcJsonp(fn,args,ok,err){
+  var cb="_rpc"+Math.floor(Math.random()*1e9)+Date.now().toString(36);
+  var q=rpcQuery(fn,args,false).replace(/&cb=_c\d+/,"&cb="+cb);
+  var s=document.createElement("script"),done=false;
+  var tm=setTimeout(function(){ if(done)return; done=true; cl(); err({message:"Server tidak merespons. Coba lagi."}); },30000);
+  function cl(){ clearTimeout(tm); if(s.parentNode) s.parentNode.removeChild(s); }
+  window[cb]=function(res){ if(done)return; done=true; cl(); ok(res); };
+  s.onerror=function(){ if(done)return; done=true; cl(); err({message:"Gagal menghubungi server. Coba lagi."}); };
+  s.src=(RPC_URL||"")+(RPC_URL?"?":"")+q;
+  document.head.appendChild(s);
+}
+function rpcFetch(fn,args,ok,err){
+  if(!window.fetch){ rpcJsonp(fn,args,ok,err); return; }
+  var ctrl = ("AbortController" in window) ? new AbortController() : null;
+  var tm = ctrl ? setTimeout(function(){ try{ctrl.abort();}catch(e){} }, 20000) : null;
+  var fin = function(){ if(tm) clearTimeout(tm); };
+  try{
+    fetch(RPC_URL + "?" + rpcQuery(fn,args,true), {method:"GET", credentials:"omit", cache:"no-store"})
+      .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+      .then(function(j){ fin(); ok(j); })
+      .catch(function(){ fin(); rpcJsonp(fn,args,ok,err); });
+  }catch(e){ fin(); rpcJsonp(fn,args,ok,err); }
+}
+function rpcCall(fn,args,ok,err){
+  if(RPC_URL){ rpcFetch(fn,args,ok,err); } else { rpcJsonp(fn,args,ok,err); }
+}
+function __mkRun(){
+  var t={};
+  var run=new Proxy(t,{
+    get:function(o,p){
+      if(p==="withSuccessHandler") return function(f){ o._ok=f; return run; };
+      if(p==="withFailureHandler") return function(f){ o._err=f; return run; };
+      if(p==="withUserObject") return function(){ return run; };
+      return function(){ var a=[].slice.call(arguments);
+        rpcCall(String(p),a,o._ok||function(){},o._err||function(e){ console.error(e); }); };
+    }
+  });
+  return run;
+}
+if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
+  window.google=window.google||{};
+  window.google.script=window.google.script||{};
+  window.google.script.run=__mkRun();
+}
 </script>
 </head>
 <body>
