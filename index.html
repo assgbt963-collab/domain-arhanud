@@ -20,7 +20,6 @@
   <div class="top">
     <img alt="logo" src="https://raw.githubusercontent.com/arhanud80/domain-iframe/main/logo.png">
     <b>HUT ke-80 ARHANUD</b>
-    <button id="bIndex" class="on" onclick="go('index')">Form</button>
     <button id="bPanitia" onclick="go('panitia')">Panitia</button>
     <button id="bPetugas" onclick="go('petugas')">Petugas</button>
     <button id="bKoord" onclick="go('koordinator')">Koordinator</button>
@@ -34,14 +33,13 @@
    (dari Deploy -> Manage deployments -> URL .../exec)
    ============================================================ */
 var WEBAPP = "https://script.google.com/macros/s/AKfycbzYva5UXoRGtDmT0izrG4RaM4zwpklYDnK4O0ZgoON31nUj0ZEfJsxXPd9PZryIzFPSUw/exec";
-var NAV = { index: WEBAPP + "?page=index",
-            panitia: WEBAPP + "?page=panitia",
+var NAV = { panitia: WEBAPP + "?page=panitia",
             petugas: WEBAPP + "?page=petugas",
             koordinator: WEBAPP + "?page=koordinator" };
 
 function go(p){
   document.getElementById("f").src = NAV[p];
-  ["bIndex","bPanitia","bPetugas","bKoord"].forEach(function(id){
+  ["bPanitia","bPetugas","bKoord"].forEach(function(id){
     document.getElementById(id).className = (id === "b" + p.charAt(0).toUpperCase() + p.slice(1)) ? "on" : "";
   });
 }
@@ -49,7 +47,7 @@ function go(p){
          undangan.arhanud80.online/#/panitia -> dashboard panitia
          undangan.arhanud80.online/#/petugas -> portal petugas */
 var h = location.hash.replace("#/","").toLowerCase();
-if (h === "panitia" || h === "petugas" || h === "koordinator") { go(h); } else { go("index"); }
+if (h === "panitia" || h === "petugas" || h === "koordinator") { go(h); } else { go("panitia"); }
 window.onhashchange = function(){
   var p = location.hash.replace("#/","").toLowerCase();
   if (p === "panitia" || p === "petugas" || p === "koordinator") go(p);
@@ -57,4 +55,3 @@ window.onhashchange = function(){
 </script>
 </body>
 </html>
-<!-- rebuild 1788165925 -->
