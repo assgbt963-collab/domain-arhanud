@@ -287,11 +287,17 @@ function lanjut(){
   }).lanjutkanKirim();
 }
 /* ===== FORMAT PESAN WA ===== */
+function fmtErr(e){
+  var m = esc((e&&e.message)||e);
+  if(m.indexOf("Fungsi tidak dikenal") >= 0)
+    return m + '<br><span style="color:#ffd75e">Backend Apps Script belum diperbarui — tempel KODE-GS v7.5 ke <b>Kode.gs</b> lalu Deploy → New version. Cek ?page=versi harus v.7.5.</span>';
+  return m;
+}
 function muatFormat(){
   google.script.run.withSuccessHandler(function(j){
     $("fBroadcast").value = j.broadcast; $("fQr").value = j.qr;
   }).withFailureHandler(function(e){
-    $("stFmt").innerHTML='<span class="err">✗ '+esc((e&&e.message)||e)+'</span>';
+    $("stFmt").innerHTML='<span class="err">✗ '+fmtErr(e)+'</span>';
   }).getWaFormat();
 }
 function sisipTag(id, tag){
@@ -304,7 +310,7 @@ function sisipTag(id, tag){
 function fillTag(x, g){
   var st = { nama:(g&&g.nama)||"Bpk/Ibu Contoh Tamu",
              tanggal:"Selasa, 17 November 2026", waktu:"08.00 WIB — Selesai",
-             tempat:"Gedung Pusat Kesenjataan Arhanud, Jakarta",
+             tempat:"Aula R. Harsoyo Mapussenarhanud, Cimahi",
              panitia:"Panitia HUT ke-80 Arhanud",
              link:"https://undangan.arhanud80.online/k.html?t=CONTOH123" };
   return String(x||"").replace(/\{nama\}/g,st.nama).replace(/\{tanggal\}/g,st.tanggal)
@@ -324,7 +330,7 @@ function simpanFmt(){
       ? '<span class="ok">✔ Format tersimpan — berlaku untuk pengiriman berikutnya.</span>'
       : '<span class="err">✗ '+esc(j.error)+'</span>';
   }).withFailureHandler(function(e){
-    $("stFmt").innerHTML='<span class="err">✗ '+esc((e&&e.message)||e)+'</span>';
+    $("stFmt").innerHTML='<span class="err">✗ '+fmtErr(e)+'</span>';
   }).saveWaFormat($("fBroadcast").value, $("fQr").value);
 }
 function resetFmt(){
@@ -332,7 +338,7 @@ function resetFmt(){
   google.script.run.withSuccessHandler(function(j){
     if(j.ok){ muatFormat(); $("stFmt").textContent="Format dikembalikan ke bawaan."; }
   }).withFailureHandler(function(e){
-    $("stFmt").innerHTML='<span class="err">✗ '+esc((e&&e.message)||e)+'</span>';
+    $("stFmt").innerHTML='<span class="err">✗ '+fmtErr(e)+'</span>';
   }).resetWaFormat();
 }
 </script>
