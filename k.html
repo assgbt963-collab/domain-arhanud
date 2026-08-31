@@ -2537,21 +2537,33 @@ document.getElementById("formKonfirmasi").addEventListener("submit", function(e)
 
   tampilkanSukses(data);
 
-  // SERVER: JSONP (mendapat konfirmasi) -> jika gagal, kirim lagi via beacon GET
-  // (tidak menunggu; tamu tetap dapat QR lokal + WA menyusul otomatis)
+  // 1) BEACON (fire-and-forget) — kirim SEKARANG, tidak menunggu apa pun.
+  //    Dedupe di server mencegah WA ganda bila jalur lain juga berhasil.
+  kirimBeacon(data);
+
+  // 2) RPC (fetch dulu, fallback JSONP) — hanya untuk memperbarui teks status.
   google.script.run
     .withSuccessHandler(function(res){
-      if(!res || !res.ok){ kirimBeaconCadangan(data); return; }
+      if(!res || !res.ok){
+        perbaruiStatus(data, "Konfirmasi dikirim. Jika kartu QR belum sampai dalam 2 menit, klik tombol di bawah.");
+        return;
+      }
       if(res.already){
-        perbaruiStatus(data, "Konfirmasi sudah tersimpan sebelumnya.");
+        perbaruiStatus(data, "Konfirmasi sudah tersimpan sebelumnya. Kartu QR sudah dikirim ke WA Anda.");
       } else if(res.wa === "sent"){
-        perbaruiStatus(data, "<strong>Kartu QR dikirim ke WhatsApp Anda.</strong>");
+        perbaruiStatus(data, "<strong>Konfirmasi tersimpan — kartu QR telah dikirim ke WhatsApp Anda.</strong>");
       } else {
         perbaruiStatus(data, "Konfirmasi tersimpan. Jika QR belum terkirim dalam 2 menit, klik tombol di bawah.");
       }
     })
-    .withFailureHandler(function(){ kirimBeaconCadangan(data); })
+    .withFailureHandler(function(){
+      perbaruiStatus(data, "Konfirmasi dikirim. Jika kartu QR belum sampai dalam 2 menit, klik tombol di bawah.");
+    })
     .simpanKonfirmasi(data);
+
+  // 3) Auto-cek status 2x (tanpa mengganggu) — memperbarui teks bila QR sudah terkirim.
+  cekStatusDelayed(30000);
+  cekStatusDelayed(90000);
 });
 
 // Tampilkan QR + status seketika (tanpa menunggu server)
@@ -2567,8 +2579,9 @@ function perbaruiStatus(data, teks){
   if(el){ el.innerHTML = "<strong>✔ " + teks + "</strong><br><br>Simpan / screenshot QR di bawah sebagai kartu kehadiran Anda."; }
 }
 
-// Cadangan: kirim lewat <img> (fire-and-forget) bila JSONP gagal/tidak merespons
-function kirimBeaconCadangan(d){
+// Kirim konfirmasi lewat <img> (fire-and-forget) — tidak menunggu respons,
+// bekerja di semua jaringan & browser. Dedupe server mencegah WA ganda.
+function kirimBeacon(d){
   try{
     var u = WEBAPP + "?mode=konfirmasi&t=" + encodeURIComponent(d.tok)
       + "&nama=" + encodeURIComponent(d.nama)
@@ -2576,8 +2589,10 @@ function kirimBeaconCadangan(d){
       + "&jumlah=" + encodeURIComponent(d.jumlah)
       + "&ket=" + encodeURIComponent(d.keterangan);
     var im = new Image(); im.src = u;
-    perbaruiStatus(d, "Konfirmasi dikirim. Kartu QR sedang dikirim ke WhatsApp Anda (1–2 menit). Jika belum sampai, klik tombol di bawah.");
   }catch(err){}
+}
+function cekStatusDelayed(ms){
+  setTimeout(function(){ cekStatus(true); }, ms);
 }
 
 function ulangiQr(){
@@ -2592,17 +2607,21 @@ function ulangiQr(){
   }).kirimQrUlang(TOK);
 }
 
-function cekStatus(){
+function cekStatus(senyap){
   if(!TOK) return;
   google.script.run.withSuccessHandler(function(j){
-    if(j.ok && j.ada && j.hadir === "HADIR")
-      perbaruiStatus({tok:TOK}, "Konfirmasi tercatat (HADIR, " + (j.confirm_waktu||"-") + "). QR sudah dikirim ke WA Anda — cek WhatsApp.");
-    else if(j.ok && j.ada)
-      perbaruiStatus({tok:TOK}, "Status: " + (j.hadir||"belum konfirmasi") + " (" + (j.confirm_waktu||"-") + ").");
-    else
-      perbaruiStatus({tok:TOK}, "Data belum tercatat di server — klik tombol kirim ulang QR atau hubungi panitia.");
+    if(j && j.ok && j.ada && j.hadir === "HADIR")
+      perbaruiStatus({tok:TOK}, "<strong>Konfirmasi tercatat (HADIR, " + (j.confirm_waktu||"-") + "). Kartu QR sudah dikirim ke WhatsApp Anda — silakan cek chat WA.</strong>");
+    else if(j && j.ok && j.ada)
+      perbaruiStatus({tok:TOK}, "Status: " + (j.hadir||"belum konfirmasi") + " (" + (j.confirm_waktu||"-") + "). Jika HADIR, QR otomatis dikirim ke WA.");
+    else if(j && j.ok && !j.ada)
+      perbaruiStatus({tok:TOK}, "Data belum tercatat di server — klik 🔁 KIRIM ULANG QR KE WA atau hubungi panitia.");
+    else if(j && j.error && String(j.error).indexOf("Fungsi tidak dikenal") >= 0)
+      perbaruiStatus({tok:TOK}, "Backend belum diperbarui — tempel KODE-GS v7.7 ke Kode.gs lalu Deploy → New version. Data Anda tetap tersimpan.");
+    else if(!senyap)
+      perbaruiStatus({tok:TOK}, "Status belum dapat dibaca: " + ((j&&j.error)||"coba lagi"));
   }).withFailureHandler(function(e){
-    perbaruiStatus({tok:TOK}, "Server belum dapat dihubungi — coba lagi sebentar lagi.");
+    if(!senyap) perbaruiStatus({tok:TOK}, "Server belum dapat dihubungi — coba lagi sebentar lagi.");
   }).statusKonfirmasi(TOK);
 }
 
