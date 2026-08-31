@@ -58,6 +58,10 @@
   .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.25);border-top-color:#090909;
         border-radius:50%;animation:sp 1s linear infinite;vertical-align:-2px;margin-right:6px}
   @keyframes sp{to{transform:rotate(360deg)}}
+  .btnLine{display:flex;flex-wrap:wrap;justify-content:center}
+  .b2{display:inline-block;width:auto;min-height:0;margin:0;padding:10px 14px;font-size:13px;font-weight:800;
+      border:1px solid #d8aa2b;border-radius:9px;background:#1d1d1d;color:#f1e9d0;cursor:pointer}
+  .b2:hover{border-color:#f2c63d}
 </style>
 <script>
 /* ====== RPC SHIM v7.3 ====== */
@@ -71,7 +75,7 @@ function rpcJsonp(fn,args,ok,err){
     q+="&a"+(i+1)+"="+encodeURIComponent(typeof a==="object"?JSON.stringify(a):String(a));
   }
   var s=document.createElement("script"),done=false;
-  var tm=setTimeout(function(){ if(done)return; done=true; cl(); err({message:"Koneksi waktu habis. Coba lagi."}); },60000);
+  var tm=setTimeout(function(){ if(done)return; done=true; cl(); err({message:"Koneksi waktu habis. Coba lagi."}); },25000);
   function cl(){ clearTimeout(tm); if(s.parentNode) s.parentNode.removeChild(s); }
   window[cb]=function(res){ if(done)return; done=true; cl(); ok(res); };
   s.onerror=function(){ if(done)return; done=true; cl(); err({message:"Gagal menghubungi server."}); };
@@ -2433,6 +2437,10 @@ var qrcode = function() {
       </form>
 
       <div id="pesan"></div>
+      <div class="btnLine" id="aksiUlang" style="display:none;margin-top:10px;gap:8px">
+        <button class="b2" style="display:inline-block;width:auto;background:#12331f;border-color:#2f9e57;color:#7ae2a5" onclick="ulangiQr()">🔁 KIRIM ULANG QR KE WA</button>
+        <button class="b2" style="display:inline-block;width:auto" onclick="cekStatus()">🔄 CEK STATUS</button>
+      </div>
     </div>
 
     <div class="footer">
@@ -2517,35 +2525,87 @@ document.getElementById("formKonfirmasi").addEventListener("submit", function(e)
 
   var btn = document.getElementById("btnKirim");
   btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span>MENYIMPAN KONFIRMASI...';
+  btn.innerHTML = '<span class="spin"></span>MENGIRIM KONFIRMASI...';
 
+  var data = {
+    nama: nama,
+    kehadiran: p.value,
+    jumlah: jumlah,
+    keterangan: document.getElementById("keterangan").value.trim(),
+    tok: TOK
+  };
+
+  tampilkanSukses(data);
+
+  // SERVER: JSONP (mendapat konfirmasi) -> jika gagal, kirim lagi via beacon GET
+  // (tidak menunggu; tamu tetap dapat QR lokal + WA menyusul otomatis)
   google.script.run
     .withSuccessHandler(function(res){
-      if(!res || !res.ok){
-        alert("Konfirmasi gagal: " + ((res && res.error) || "coba lagi."));
-        btn.disabled = false; btn.innerHTML = "KIRIM KONFIRMASI";
-        return;
+      if(!res || !res.ok){ kirimBeaconCadangan(data); return; }
+      if(res.already){
+        perbaruiStatus(data, "Konfirmasi sudah tersimpan sebelumnya.");
+      } else if(res.wa === "sent"){
+        perbaruiStatus(data, "<strong>Kartu QR dikirim ke WhatsApp Anda.</strong>");
+      } else {
+        perbaruiStatus(data, "Konfirmasi tersimpan. Jika QR belum terkirim dalam 2 menit, klik tombol di bawah.");
       }
-      document.getElementById("formKonfirmasi").style.display = "none";
-      var catatan = "Data kehadiran telah tersimpan.";
-      if(res.wa === "sent"){
-        catatan += "<br><br><strong>Kartu QR juga telah dikirim ke WhatsApp Anda.</strong>";
-      }
-      catatan += "<br><br>Simpan / screenshot QR di bawah sebagai kartu kehadiran Anda.";
-      showQr(TOK, "KONFIRMASI BERHASIL", catatan);
     })
-    .withFailureHandler(function(err){
-      alert("Konfirmasi gagal: " + ((err && err.message) || err));
-      btn.disabled = false; btn.innerHTML = "KIRIM KONFIRMASI";
-    })
-    .simpanKonfirmasi({
-      nama: nama,
-      kehadiran: p.value,
-      jumlah: jumlah,
-      keterangan: document.getElementById("keterangan").value.trim(),
-      tok: TOK
-    });
+    .withFailureHandler(function(){ kirimBeaconCadangan(data); })
+    .simpanKonfirmasi(data);
 });
+
+// Tampilkan QR + status seketika (tanpa menunggu server)
+function tampilkanSukses(data){
+  document.getElementById("formKonfirmasi").style.display = "none";
+  document.getElementById("aksiUlang").style.display = "flex";
+  showQr(data.tok, "KONFIRMASI DIKIRIM",
+    "<span id='stProses'>Menyimpan & mengirim kartu QR ke WhatsApp Anda…</span>");
+}
+
+function perbaruiStatus(data, teks){
+  var el = document.getElementById("stProses");
+  if(el){ el.innerHTML = "<strong>✔ " + teks + "</strong><br><br>Simpan / screenshot QR di bawah sebagai kartu kehadiran Anda."; }
+}
+
+// Cadangan: kirim lewat <img> (fire-and-forget) bila JSONP gagal/tidak merespons
+function kirimBeaconCadangan(d){
+  try{
+    var u = WEBAPP + "?mode=konfirmasi&t=" + encodeURIComponent(d.tok)
+      + "&nama=" + encodeURIComponent(d.nama)
+      + "&kehadiran=" + encodeURIComponent(d.kehadiran)
+      + "&jumlah=" + encodeURIComponent(d.jumlah)
+      + "&ket=" + encodeURIComponent(d.keterangan);
+    var im = new Image(); im.src = u;
+    perbaruiStatus(d, "Konfirmasi dikirim. Kartu QR sedang dikirim ke WhatsApp Anda (1–2 menit). Jika belum sampai, klik tombol di bawah.");
+  }catch(err){}
+}
+
+function ulangiQr(){
+  if(!TOK) return;
+  var b = document.getElementById("aksiUlang");
+  google.script.run.withSuccessHandler(function(j){
+    if(j.ok && j.wa === "sent"){ perbaruiStatus({tok:TOK}, "Kartu QR dikirim ulang ke WhatsApp Anda."); }
+    else if(j.ok && j.wa === "already"){ perbaruiStatus({tok:TOK}, "Kartu QR sudah dikirim sebelumnya."); }
+    else { perbaruiStatus({tok:TOK}, "Pengiriman ulang gagal (" + ((j && j.wa) || "coba lagi") + ")."); }
+  }).withFailureHandler(function(e){
+    perbaruiStatus({tok:TOK}, "Belum bisa mengirim ulang: " + ((e&&e.message)||e));
+  }).kirimQrUlang(TOK);
+}
+
+function cekStatus(){
+  if(!TOK) return;
+  google.script.run.withSuccessHandler(function(j){
+    if(j.ok && j.ada && j.hadir === "HADIR")
+      perbaruiStatus({tok:TOK}, "Konfirmasi tercatat (HADIR, " + (j.confirm_waktu||"-") + "). QR sudah dikirim ke WA Anda — cek WhatsApp.");
+    else if(j.ok && j.ada)
+      perbaruiStatus({tok:TOK}, "Status: " + (j.hadir||"belum konfirmasi") + " (" + (j.confirm_waktu||"-") + ").");
+    else
+      perbaruiStatus({tok:TOK}, "Data belum tercatat di server — klik tombol kirim ulang QR atau hubungi panitia.");
+  }).withFailureHandler(function(e){
+    perbaruiStatus({tok:TOK}, "Server belum dapat dihubungi — coba lagi sebentar lagi.");
+  }).statusKonfirmasi(TOK);
+}
+
 </script>
 </body>
 </html>
