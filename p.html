@@ -124,6 +124,29 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
     </div>
 
     <div class="card" style="overflow-x:auto">
+      <h2 style="font-size:14px;color:#d8aa2b;margin-bottom:8px">✏️ FORMAT PESAN WA <span style="color:#777;font-weight:400">(bebas disesuaikan)</span></h2>
+      <div class="btnLine" style="gap:6px;flex-wrap:wrap;align-items:center">
+        <small style="color:#8f8f8f">Sisipkan:</small>
+        <button class="b2" onclick="sisipTag('fBroadcast','{nama}')">{nama}</button>
+        <button class="b2" onclick="sisipTag('fBroadcast','{tanggal}')">{tanggal}</button>
+        <button class="b2" onclick="sisipTag('fBroadcast','{waktu}')">{waktu}</button>
+        <button class="b2" onclick="sisipTag('fBroadcast','{tempat}')">{tempat}</button>
+        <button class="b2" style="background:#12331f;border-color:#2f9e57;color:#7ae2a5" onclick="sisipTag('fBroadcast','{link}')">{link}</button>
+        <button class="b2" onclick="sisipTag('fBroadcast','{panitia}')">{panitia}</button>
+      </div>
+      <label class="muted" style="display:block;margin:8px 0 3px">1) PESAN UNDANGAN (broadcast) — <b>wajib memuat {link}</b>:</label>
+      <textarea id="fBroadcast" rows="7" style="width:100%;background:#111;color:#f1e9d0;border:1px solid #555;border-radius:9px;padding:10px;font-size:13px;font-family:Consolas,'Courier New',monospace;line-height:1.5"></textarea>
+      <label class="muted" style="display:block;margin:8px 0 3px">2) PESAN KARTU QR (terkirim otomatis setelah tamu konfirmasi HADIR):</label>
+      <textarea id="fQr" rows="5" style="width:100%;background:#111;color:#f1e9d0;border:1px solid #555;border-radius:9px;padding:10px;font-size:13px;font-family:Consolas,'Courier New',monospace;line-height:1.5"></textarea>
+      <div class="btnLine" style="margin-top:8px">
+        <button class="b2" onclick="previewFmt()">👁 PREVIEW PESAN</button>
+        <button class="b2" style="background:#12331f;border-color:#2f9e57;color:#7ae2a5" onclick="simpanFmt()">💾 SIMPAN FORMAT</button>
+        <button class="b2" onclick="resetFmt()">↩ KEMBALIKAN AWAL</button>
+      </div>
+      <p class="muted" id="stFmt">Format tersimpan berlaku untuk semua pengiriman berikutnya (undangan &amp; QR).</p>
+    </div>
+
+    <div class="card" style="overflow-x:auto">
       <h2 style="font-size:14px;color:#d8aa2b;margin-bottom:8px">👥 DAFTAR TAMU &amp; STATUS KIRIM</h2>
       <div id="kosongBox" style="display:none;background:#3a2a10;border:1px solid #f0c33a;color:#ffe08a;border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px">
         <b>Belum ada tamu.</b> Tambah lewat form di atas, atau klik <b>📥 ISI DATA CONTOH</b> di bawah.
@@ -172,7 +195,8 @@ function muat(){
         '<td>'+esc(g.hp)+'</td><td>'+badgeKirim(g.invite_status)+'</td>'+
         '<td><button class="b2" onclick="kirimUlang(\''+g.token+'\',\''+esc(g.nama).replace(/'/g,"")+'\')">📨 Kirim Ulang</button></td></tr>';
     }).join("") || '<tr><td colspan="4" class="muted">Belum ada tamu.</td></tr>';
-    muatStatus(); muatLog();
+    window._g0 = j.rows[0] || null;
+    muatStatus(); muatLog(); muatFormat();
   }).withFailureHandler(function(e){
     $("stats").innerHTML='<div class="st" style="grid-column:1/-1"><b style="color:#ff6b6b">✗</b><span>'+esc((e&&e.message)||e)+'</span></div>';
   }).dataPanitia();
@@ -261,6 +285,55 @@ function lanjut(){
     if(res.lanjut) $("stKirim").textContent += " | ⏩ masih ada sisa.";
     muat();
   }).lanjutkanKirim();
+}
+/* ===== FORMAT PESAN WA ===== */
+function muatFormat(){
+  google.script.run.withSuccessHandler(function(j){
+    $("fBroadcast").value = j.broadcast; $("fQr").value = j.qr;
+  }).withFailureHandler(function(e){
+    $("stFmt").innerHTML='<span class="err">✗ '+esc((e&&e.message)||e)+'</span>';
+  }).getWaFormat();
+}
+function sisipTag(id, tag){
+  var el = $(id);
+  var s = el.selectionStart || 0, e = el.selectionEnd || 0;
+  el.value = el.value.slice(0,s) + tag + el.value.slice(e);
+  el.focus();
+  try{ el.selectionStart = el.selectionEnd = s + tag.length; }catch(x){}
+}
+function fillTag(x, g){
+  var st = { nama:(g&&g.nama)||"Bpk/Ibu Contoh Tamu",
+             tanggal:"Selasa, 17 November 2026", waktu:"08.00 WIB — Selesai",
+             tempat:"Gedung Pusat Kesenjataan Arhanud, Jakarta",
+             panitia:"Panitia HUT ke-80 Arhanud",
+             link:"https://undangan.arhanud80.online/k.html?t=CONTOH123" };
+  return String(x||"").replace(/\{nama\}/g,st.nama).replace(/\{tanggal\}/g,st.tanggal)
+    .replace(/\{waktu\}/g,st.waktu).replace(/\{tempat\}/g,st.tempat)
+    .replace(/\{link\}/g,st.link).replace(/\{panitia\}/g,st.panitia);
+}
+function previewFmt(){
+  var g = window._g0 || null;
+  var b = fillTag($("fBroadcast").value, g) || "(kosong)";
+  var q = fillTag($("fQr").value, g) || "(kosong)";
+  confirm("PREVIEW PESAN UNDANGAN:\n\n" + b + "\n\n———————\n\nPREVIEW PESAN KARTU QR:\n\n" + q);
+}
+function simpanFmt(){
+  $("stFmt").textContent="⏳ Menyimpan format…";
+  google.script.run.withSuccessHandler(function(j){
+    $("stFmt").innerHTML = j.ok
+      ? '<span class="ok">✔ Format tersimpan — berlaku untuk pengiriman berikutnya.</span>'
+      : '<span class="err">✗ '+esc(j.error)+'</span>';
+  }).withFailureHandler(function(e){
+    $("stFmt").innerHTML='<span class="err">✗ '+esc((e&&e.message)||e)+'</span>';
+  }).saveWaFormat($("fBroadcast").value, $("fQr").value);
+}
+function resetFmt(){
+  if(!confirm("Kembalikan format pesan WA ke bawaan sistem?")) return;
+  google.script.run.withSuccessHandler(function(j){
+    if(j.ok){ muatFormat(); $("stFmt").textContent="Format dikembalikan ke bawaan."; }
+  }).withFailureHandler(function(e){
+    $("stFmt").innerHTML='<span class="err">✗ '+esc((e&&e.message)||e)+'</span>';
+  }).resetWaFormat();
 }
 </script>
 </body>
