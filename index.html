@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undangan HUT ke-80 Arhanud</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#050505}
+  .wrap{display:flex;flex-direction:column;height:100vh}
+  .top{background:#0b0b0b;border-bottom:1px solid #2a2a2a;padding:6px 10px;display:flex;align-items:center;gap:8px}
+  .top img{height:34px;width:34px;object-fit:contain;background:#fff;border-radius:50%;padding:2px}
+  .top b{color:#d8aa2b;font-size:13px;letter-spacing:1px;flex:1}
+  .top button{background:#151515;color:#d8aa2b;border:1px solid #d8aa2b;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer}
+  .top button.on{background:#d8aa2b;color:#111;font-weight:700}
+  iframe{flex:1;border:0;width:100%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <img alt="logo" src="logo.png">
+    <b>HUT ke-80 ARHANUD</b>
+    <button id="bIndex" class="on" onclick="go('index')">Form</button>
+    <button id="bPanitia" onclick="go('panitia')">Panitia</button>
+    <button id="bPetugas" onclick="go('petugas')">Petugas</button>
+  </div>
+  <iframe id="f" allow="camera; microphone" referrerpolicy="no-referrer"></iframe>
+</div>
+
+<script>
+/* ============================================================
+   GANTI SATU BARIS INI dengan URL Web App Apps Script Anda
+   (dari Deploy -> Manage deployments -> URL .../exec)
+   ============================================================ */
+var WEBAPP = "SCRIPT_URL_KALIAN_EXEC";
+var NAV = { index: WEBAPP + "?page=index",
+            panitia: WEBAPP + "?page=panitia",
+            petugas: WEBAPP + "?page=petugas" };
+
+function go(p){
+  document.getElementById("f").src = NAV[p];
+  ["bIndex","bPanitia","bPetugas"].forEach(function(id){
+    document.getElementById(id).className = (id === "b" + p.charAt(0).toUpperCase() + p.slice(1)) ? "on" : "";
+  });
+}
+/* rute: undangan.arhanud80.online/          -> form tamu
+         undangan.arhanud80.online/#/panitia -> dashboard panitia
+         undangan.arhanud80.online/#/petugas -> portal petugas */
+var h = location.hash.replace("#/","").toLowerCase();
+if (h === "panitia" || h === "petugas") { go(h); } else { go("index"); }
+window.onhashchange = function(){
+  var p = location.hash.replace("#/","").toLowerCase();
+  if (p === "panitia" || p === "petugas") go(p);
+};
+</script>
+</body>
+</html>
