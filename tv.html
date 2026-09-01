@@ -53,6 +53,8 @@
     animation:bl 2.4s ease-in-out infinite}
   @keyframes bl{0%,100%{opacity:.35}50%{opacity:1}}
   .hide{display:none!important}
+  .jam2{color:#d8aa2b;font-size:clamp(46px,12vh,110px);font-weight:900;letter-spacing:4px;margin-top:18px;
+    text-shadow:0 0 24px rgba(216,170,43,.3)}
   .pulse{animation:pop .6s ease}
   @keyframes pop{0%{transform:scale(.92);opacity:.4}100%{transform:scale(1);opacity:1}}
 </style>
@@ -119,7 +121,7 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
   <div class="korner k-tl"></div><div class="korner k-tr"></div>
   <div class="korner k-bl"></div><div class="korner k-br"></div>
 
-  <div class="tot hide" id="totBox">TAMU TIBA DI LOKASI<br><b id="tot">0</b></div>
+  <div class="tot hide" id="totBox"><span id="pgLabel" style="font-size:11px;color:#777"></span><br>TAMU TIBA DI LOKASI<br><b id="tot">0</b></div>
   <div class="jam" id="jamBox"><div class="t" id="jamt">--:--</div><div class="d" id="jamd"></div></div>
 
   <div class="layar" id="layar">
@@ -133,7 +135,8 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
         <div class="atas">SILAKAN SCAN KARTU QR</div>
         <div class="nomor" style="font-size:clamp(30px,8vh,64px)">DI MEJA PENERIMA</div>
       </div>
-      <div class="idle-msg">Petugas akan memandu Anda ke meja…</div>
+      <div class="idle-msg" id="idleMsg">Petugas akan memandu Anda ke meja…</div>
+      <div class="jam2" id="jamBig">--:--</div>
     </div>
 
     <!-- TAMU -->
@@ -162,8 +165,9 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
 /* ===== LAYAR TV — polling tvData tiap 4 detik ===== */
 var TERAKHIR = null;      // key tamu yang sedang ditampilkan
 var TAMPAIL = 0;          // timestamp kapan mulai tampil
-var DURASI = 20000;       // 20 detik per tamu, lalu idle
+var DURASI = 10000;       // 10 detik per tamu, lalu kembali standby (anti-penumpukan)
 var KOTA = "Asia/Jakarta";
+var PG = (function(){ try{ return new URLSearchParams(location.search).get("pg")||""; }catch(e){ return ""; } })();
 
 function pad(n){ return String(n).padStart(2,"0"); }
 function jamUpdate(){
@@ -172,6 +176,7 @@ function jamUpdate(){
     var s = new Intl.DateTimeFormat("id-ID", { timeZone: KOTA, hour:"2-digit", minute:"2-digit", hour12:false }).format(d);
     var tgl = new Intl.DateTimeFormat("id-ID", { timeZone: KOTA, weekday:"long", day:"numeric", month:"long", year:"numeric" }).format(d);
     $h("jamt").textContent = s; $h("jamd").textContent = tgl;
+    var jb = $h("jamBig"); if (jb) jb.textContent = s;
   }catch(e){
     $h("jamt").textContent = pad(d.getHours())+":"+pad(d.getMinutes());
   }
@@ -191,13 +196,20 @@ function tampilTamu(g, total){
   if (g.meja_istri && g.meja_utama !== g.meja_istri){
     st.style.display = "block"; st.textContent = "💐 Pendamping / Istri → MEJA " + g.meja_istri;
   } else { st.style.display = "none"; }
-  $h("infoTamu").textContent = (g.gender ? g.gender + " · " : "") + (g.jumlah ? g.jumlah + " orang · " : "") + "HUT ke-80 Arhanud · " + (g.waktu||"");
+  $h("infoTamu").textContent = (g.gender ? g.gender + " · " : "") + (g.jumlah ? g.jumlah + " orang · " : "") + "HUT ke-80 Arhanud · " + (g.waktu||"") + (g.petugas ? " · Diterima " + g.petugas : "");
   $h("tot").textContent = total;
   $h("totBox").classList.remove("hide");
+  var pl = $h("pgLabel");
+  if (pl) pl.textContent = PG ? ("POS " + PG) : "";
+  $h("jamBig").style.display = "none";
 }
 function setIdle(){
   $h("tamu").style.display = "none";
   $h("idle").style.display = "flex";
+  $h("jamBig").style.display = "block";
+  var pl = $h("pgLabel");
+  if (pl) pl.textContent = PG ? ("POS " + PG) : "";
+  if (PG) $h("idleMsg").textContent = "Menunggu tamu discan oleh " + PG + " di POS ini…";
 }
 
 function tick(){
@@ -214,8 +226,10 @@ function tick(){
     }
   }).withFailureHandler(function(){
     // offline sebentar — biarkan tampilan terakhir
-  }).tvData();
+  }).tvData(PG);
 }
+if (PG){ document.title = "Layar Monitor — " + PG + " · Penerima Tamu"; }
+else { document.title = "Layar Monitor — Penerima Tamu HUT ke-80 Arhanud"; }
 
 jamUpdate(); setInterval(jamUpdate, 1000);
 tick(); setInterval(tick, 4000);
