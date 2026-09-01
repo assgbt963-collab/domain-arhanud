@@ -50,6 +50,8 @@
     font-size:12px;font-weight:800}
   .mb-err{display:inline-block;background:#3d120f;color:#ff8a7a;border-radius:8px;padding:6px 12px;margin-top:10px;
     font-size:12px;font-weight:800}
+  .mb-warn{display:block;background:#3a2a10;color:#ffe08a;border:1px dashed #f0c33a;border-radius:12px;
+    padding:10px 14px;margin-top:10px;font-size:13px;font-weight:800}
   .row{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #222;flex-wrap:wrap}
   .row .in{flex:1;min-width:0}
   .btnLine{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
@@ -388,24 +390,46 @@ function autoCheckin(g){
       var g2 = j.guest;
       tampilMeja({ token:g2.token, nama:g2.nama, gender:g2.gender, jumlah:g2.jumlah,
         meja_utama:g2.meja_utama, meja_istri:g2.meja_istri, checkin_waktu:g2.checkin_waktu },
-        '<span class="mb-ok">✔ CHECK-IN BERHASIL — TAMPIL DI LAYAR TV</span>');
+        '<span class="mb-ok">✔ CHECK-IN BERHASIL — SUDAH TAMPIL DI LAYAR TV'+(PG?' '+esc(PG)+'':'')+' · <a href="tv.html?pg='+encodeURIComponent(PG)+'" target="_blank" style="color:#8fdc9f">📺 BUKA LAYAR TV</a></span>');
     } else {
       $("stMeja").innerHTML = '<span class="mb-err">✗ '+esc(j.error)+'</span>';
     }
   }).withFailureHandler(function(e){
-    $("stMeja").innerHTML = '<span class="mb-err">✗ '+esc((e&&e.message)||e)+'</span>';
+    // Jaringan lambat/sesaat — coba ulang OTOMATIS sekali, lalu tampilkan tombol cek.
+    window.__retryOnce = window.__retryOnce || {};
+    if (!window.__retryOnce[g.token]){
+      window.__retryOnce[g.token] = 1;
+      $("stMeja").innerHTML = '<span class="mb-ok">⟳ Jaringan lambat — mencoba ulang…</span>';
+      setTimeout(function(){
+        google.script.run.withSuccessHandler(function(j2){
+          if (j2 && j2.ok){
+            var g2 = j2.guest;
+            tampilMeja({ token:g2.token, nama:g2.nama, gender:g2.gender, jumlah:g2.jumlah,
+              meja_utama:g2.meja_utama, meja_istri:g2.meja_istri, checkin_waktu:g2.checkin_waktu },
+              '<span class="mb-ok">✔ CHECK-IN BERHASIL (percobaan ke-2) — SUDAH TAMPIL DI LAYAR TV'+(PG?' '+esc(PG):'')+'</span>');
+          } else {
+            $("stMeja").innerHTML = '<span class="mb-err">✗ '+esc((j2&&j2.error)||"Gagal")+'</span>'+
+              '<div style="margin-top:8px;font-size:12px;color:#ffb84d">Tamu tetap bisa di-check-in ulang: tekan tombol CARI / SCAN LAGI lalu scan ulang.</div>';
+          }
+        }).withFailureHandler(function(e2){
+          $("stMeja").innerHTML = '<span class="mb-err">✗ '+esc((e2&&e2.message)||e2)+' — tekan CARI / SCAN LAGI lalu scan ulang.</span>';
+        }).checkinTamu(g.token, PG);
+      }, 2500);
+    } else {
+      $("stMeja").innerHTML = '<span class="mb-err">✗ '+esc((e&&e.message)||e)+' — tekan CARI / SCAN LAGI lalu scan ulang.</span>';
+    }
   }).checkinTamu(g.token, PG);
 }
 function tampilMeja(g, statusHtml){
   $("hasil").style.display = "block";
-  var meja = (g.meja_utama && g.meja_utama !== "—")
-    ? esc(g.meja_utama)
-    : (g.meja_istri ? esc(g.meja_istri) : "?"); 
+  var punyaMeja = (g.meja_utama && g.meja_utama !== "—");
+  var adaIstri  = (g.meja_istri && g.meja_istri !== "—");
   $("hasilIsi").innerHTML =
     '<div class="mejabesar">'+
       '<div class="mb-top">SELAMAT DATANG DI · PUSSENARHANUD</div>'+
-      '<div class="mb-ke">SILAKAN MENUJU</div>'+
-      '<div class="mb-meja">MEJA '+(g.meja_utama && g.meja_utama !== "—" ? esc(g.meja_utama) : (g.meja_istri ? esc(g.meja_istri) : "—"))+'</div>'+
+      '<div class="mb-ke">'+(punyaMeja||adaIstri ? "SILAKAN MENUJU" : "MEJA TAMU")+'</div>'+
+      '<div class="mb-meja">'+(punyaMeja ? "MEJA "+esc(g.meja_utama) : (adaIstri ? "MEJA "+esc(g.meja_istri) : "⏳ DIATUR KOORDINATOR"))+'</div>'+
+      (!(punyaMeja||adaIstri) ? '<div class="mb-warn">⚠ MEJA BELUM DIATUR — HUBUNGI KOORDINATOR<br><span style="font-weight:400;font-size:12px">Anda tetap boleh check-in; meja akan tampil saat diatur.</span></div>' : '')+
       (g.meja_istri ? '<div class="mb-sub">💐 PENDAMPING / ISTRI → '+esc(g.meja_istri)+'</div>' : '')+
       '<div class="mb-nama">'+esc(g.nama)+'</div>'+
       '<div class="mb-sub">'+(g.hadir==="HADIR" ? (g.jumlah||1)+" orang" : esc(g.hadir||"belum konfirmasi"))+' · HUT ke-80 Arhanud</div>'+

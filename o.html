@@ -114,8 +114,19 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
   <div id="app" style="display:none">
     <div class="stats" id="stats"></div>
 
+    <div class="card" id="cardBaru">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+        <h2 style="font-size:14px;color:#d8aa2b">⚡ CHECK-IN TERBARU — <span class="muted">tamu muncul otomatis begitu petugas check-in</span></h2>
+        <span class="badge-baru" id="badgeBaru" style="display:none;background:#f2c63d;color:#111;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:900">BARU</span>
+      </div>
+      <div id="baruBox"><p class="muted">Belum ada tamu check-in.</p></div>
+    </div>
+
     <div class="card" style="overflow-x:auto">
-      <h2 style="font-size:14px;color:#d8aa2b;margin-bottom:6px">🍽️ ATUR MEJA TAMU — <span class="muted">hanya tamu yang sudah konfirmasi HADIR</span></h2>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">
+        <h2 style="font-size:14px;color:#d8aa2b;margin-bottom:0">🍽️ ATUR MEJA TAMU — <span class="muted">hanya tamu yang sudah konfirmasi HADIR</span></h2>
+        <button class="b2" onclick="susunMeja()" title="Isi meja_utama 1..N otomatis untuk tamu yang belum punya meja">🎲 SUSUN MEJA OTOMATIS</button>
+      </div>
       <p class="muted" style="margin-bottom:8px">Isi kode meja (contoh: B03 = zona Bapak, I03 = zona Istri) lalu klik SIMPAN. Kosongkan untuk menghapus.</p>
       <table id="tblMeja"><thead><tr>
         <th>Nama</th><th>Jumlah</th><th>Meja Utama</th><th>Meja Istri</th><th>Aksi</th>
@@ -199,10 +210,55 @@ function muat(){
         '<td>'+(g.checkin_waktu?esc(g.checkin_waktu):'<span class="muted">—</span>')+'</td>'+
         '<td><button class="b2" onclick="qrUlang(\''+g.token+'\')">📨 QR Ulang</button></td></tr>';
     }).join("") || '<tr><td colspan="7" class="muted">Belum ada tamu.</td></tr>';
+    // Feed check-in real-time (langsung dari hasil checkinTamu petugas)
+    var baru = j.terbaru || [];
+    var bb = $("badgeBaru");
+    if (baru.length){
+      var lama = window.__JKADAR || 0;
+      var nBaru = Math.max(0, baru.length - lama);
+      if (nBaru > 0 && lama > 0){
+        if (bb){ bb.style.display="inline-block"; bb.textContent = "+"+nBaru+" BARU"; }
+        try{ bunyiKecil(); }catch(e){}
+      } else if (bb){ bb.style.display="none"; }
+      window.__JKADAR = baru.length;
+      $("baruBox").innerHTML = baru.map(function(t){
+        var mj = t.meja_utama ? "MEJA <b>"+esc(t.meja_utama)+"</b>" : '<span style="color:#ffb84d">MEJA BELUM DIATUR</span>';
+        var mi = (t.meja_istri && t.meja_istri!==t.meja_utama) ? ' · <span style="color:#f2c63d">💐 '+esc(t.meja_istri)+"</span>" : "";
+        return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #2a2a2a">'+
+          '<span style="font-size:22px">✅</span>'+
+          '<div style="flex:1;min-width:0"><b style="color:#fff">'+esc(t.nama)+'</b><br>'+
+          '<span class="muted">'+esc(t.waktu)+' · diterima '+(t.petugas?"POS <b>"+esc(t.petugas)+"</b>":"petugas")+'</span></div>'+
+          '<div style="text-align:right;font-size:13px">'+mj+mi+'</div></div>';
+      }).join("");
+    } else {
+      if (bb) bb.style.display="none";
+      window.__JKADAR = 0;
+      $("baruBox").innerHTML = '<p class="muted">Belum ada tamu check-in.</p>';
+    }
     muatLog();
   }).withFailureHandler(function(e){
     $("stats").innerHTML='<div class="st" style="grid-column:1/-1"><b style="color:#ff6b6b">✗</b><span>'+esc((e&&e.message)||e)+'</span></div>';
   }).dataKoordinator();
+}
+function bunyiKecil(){
+  try{
+    var A = window.__AX || new (window.AudioContext||window.webkitAudioContext)();
+    window.__AX = A;
+    if (A.state==="suspended") A.resume();
+    var t = A.currentTime, o = A.createOscillator(), g = A.createGain();
+    o.type="sine"; o.frequency.value=1046;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.12,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.4);
+    o.connect(g); g.connect(A.destination); o.start(t); o.stop(t+0.45);
+  }catch(e){}
+}
+function susunMeja(){
+  if (!confirm("Isi meja utama 1..N OTOMATIS untuk semua tamu HADIR yang belum punya meja?\n(Meja yang sudah diisi TIDAK diubah.)")) return;
+  google.script.run.withSuccessHandler(function(j){
+    if (j && j.ok) alert("✅ "+(j.jumlah||0)+" tamu diberi meja otomatis (1.."+(j.terisi||0)+").");
+    else alert("✗ "+((j&&j.error)||"Gagal menyusun meja."));
+    muat();
+  }).withFailureHandler(function(e){ alert("✗ "+(e&&e.message||e)); }).susunMejaOtomatis(true);
 }
 function simpanMeja(token, nama){
   var u = $("mu_"+token).value.trim().toUpperCase();
