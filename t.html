@@ -126,7 +126,15 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
   <div id="pinGate" class="card">
     <div style="font-size:30px">🔐</div>
     <h2 style="margin:8px 0;color:#d8aa2b">PIN PETUGAS</h2>
-    <input id="pNama" placeholder="Nama petugas / POS (contoh: Petugas 1)" autocomplete="off" style="margin-bottom:8px">
+    <select id="pPos" style="margin-bottom:6px;width:100%;background:#111;color:#f1e9d0;border:1px solid #555;border-radius:9px;padding:10px;font-size:15px">
+      <option value="">— pilih POS cepat —</option>
+      <option value="Pos 1">Pos 1</option>
+      <option value="Pos 2">Pos 2</option>
+      <option value="Pos 3">Pos 3</option>
+      <option value="Pos 4">Pos 4</option>
+      <option value="kustom">… atau ketik nama kustom</option>
+    </select>
+    <input id="pNama" placeholder="Nama petugas / POS (otomatis terisi dari pilihan)" autocomplete="off">
     <input type="password" id="pin" placeholder="••••••">
     <button onclick="masuk()">MASUK</button>
     <p class="muted" id="pinStatus" style="margin-top:8px">PIN default: petugas80. Nama dipakai untuk layar monitor Anda sendiri.</p>
@@ -173,7 +181,24 @@ function setPG(){
   var l = $("tvLink");
   if (l) l.href = "tv.html?pg=" + encodeURIComponent(nm);
 }
-window.addEventListener("load", function(){ setPG(); });
+function initPG(){
+  var sel = $("pPos"), nm = $("pNama");
+  if (sel && nm){
+    sel.addEventListener("change", function(){
+      var v = sel.value;
+      if (v === "kustom"){ nm.focus(); return; }
+      if (v) nm.value = v;
+    });
+    nm.addEventListener("input", function(){
+      var v = nm.value.trim();
+      var presets = ["Pos 1","Pos 2","Pos 3","Pos 4"];
+      sel.value = presets.indexOf(v) >= 0 ? v : (v ? "kustom" : "");
+    });
+  }
+  if (PG && nm && !nm.value) nm.value = PG;
+  setPG();
+}
+window.addEventListener("load", initPG);
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function masuk(){
