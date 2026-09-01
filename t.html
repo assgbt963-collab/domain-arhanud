@@ -33,6 +33,26 @@
   .row{display:flex;align-items:center;gap:8px;background:#131313;border-radius:10px;padding:8px;margin:6px 0}
   .row button{width:auto;padding:8px 12px;font-size:13px;margin:0}
   .row .in{flex:1;text-align:left;font-size:14px}
+.camwrap{background:#000;border-radius:12px;overflow:hidden;margin:8px 0;position:relative}
+  .camwrap video{width:100%;max-height:300px;display:block}
+  .camframe{position:absolute;inset:0;border:3px solid #f0c33a;border-radius:12px;pointer-events:none;
+    box-shadow:0 0 0 2000px rgba(0,0,0,.25), inset 0 0 0 2000px rgba(0,0,0,.0);animation:blinkf 1.6s ease-in-out infinite}
+  @keyframes blinkf{0%,100%{opacity:1}50%{opacity:.55}}
+  .mejabesar{background:linear-gradient(165deg,#1a1505,#0a0802);border:2px solid #d8aa2b;border-radius:20px;
+    padding:22px 16px;text-align:center;margin:10px 0;box-shadow:0 0 26px rgba(216,170,43,.25)}
+  .mb-top{color:#d8aa2b;font-size:12px;font-weight:800;letter-spacing:2px}
+  .mb-ke{color:#fff;font-size:clamp(15px,4.5vw,20px);font-weight:800;margin-top:8px;letter-spacing:1px}
+  .mb-meja{font-size:clamp(44px,13vw,84px);font-weight:900;color:#f2c63d;line-height:1.05;margin:2px 0;
+    text-shadow:0 0 22px rgba(242,198,61,.35)}
+  .mb-nama{color:#f1e9d0;font-size:clamp(13px,4vw,17px);font-weight:700;margin-top:6px}
+  .mb-sub{color:#9a9a9a;font-size:11px;margin-top:6px;line-height:1.5}
+  .mb-ok{display:inline-block;background:#0f3d23;color:#5fe08f;border-radius:8px;padding:6px 12px;margin-top:10px;
+    font-size:12px;font-weight:800}
+  .mb-err{display:inline-block;background:#3d120f;color:#ff8a7a;border-radius:8px;padding:6px 12px;margin-top:10px;
+    font-size:12px;font-weight:800}
+  .row{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #222;flex-wrap:wrap}
+  .row .in{flex:1;min-width:0}
+  .btnLine{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
 </style>
 <script>
 /* ====== RPC SHIM v7.7 (fetch-first, fallback JSONP) ====== */
@@ -113,14 +133,21 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
 
   <div id="app" style="display:none">
     <div class="card">
-      <h2 style="font-size:14px;color:#d8aa2b;margin-bottom:8px">📷 SCAN BARCODE / 🔎 CARI</h2>
+      <h2 style="font-size:14px;color:#d8aa2b;margin-bottom:8px">📷 SCAN QR KARTU TAMU</h2>
+      <div class="btnLine">
+        <button onclick="mulaiCam()" id="btnCam" style="flex:1">📷 SCAN LANGSUNG</button>
+        <button class="b2" onclick="document.getElementById('foto').click()" style="flex:1">🖼 PILIH FOTO</button>
+      </div>
       <input type="file" id="foto" accept="image/*" capture="environment" style="display:none">
-      <button onclick="document.getElementById('foto').click()">📷 FOTO KARTU QR TAMU</button>
+      <div class="camwrap" id="camBox" style="display:none">
+        <video id="cam" playsinline muted></video>
+        <div class="camframe"></div>
+      </div>
       <img id="prv" style="display:none;max-width:100%;border-radius:10px;margin:8px auto;border:1px solid #444">
-      <p class="muted" id="stScan">Kamera HP terbuka → foto kartu QR → otomatis dikenali.</p>
-      <input id="q" placeholder="… atau ketik nama tamu / kode QR" autocomplete="off">
-      <button onclick="cari()">🔎 CARI</button>
-      <p class="muted">Kode di kartu QR (contoh: C28Yy4jU) — sama persis.</p>
+      <p class="muted" id="stScan">Arahkan kamera ke kartu QR di HP tamu → otomatis: cari tamu, tampil MEJA, check-in.</p>
+      <input id="q" placeholder="… atau ketik kode QR / nama tamu" autocomplete="off">
+      <button onclick="cari()">🔎 CARI / KETIK KODE</button>
+      <p class="muted">Kode di kartu QR (contoh: C28Yy4jU). <a href="tv.html" target="_blank" style="color:#d8aa2b">📺 Buka layar TV/monitor →</a></p>
     </div>
 
     <div class="card" id="hasilLista" style="display:none"></div>
@@ -226,30 +253,126 @@ function detectFromImg(img){
 function detectCanvas(img){
   try{
     if (!window.jsQR) return null;
-    var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
-    var cv = document.createElement("canvas"); cv.width = w; cv.height = h;
-    var cx = cv.getContext("2d");
-    cx.drawImage(img, 0, 0, w, h);
-    var d = cx.getImageData(0, 0, w, h);
-    var r = window.jsQR(d.data, w, h);
-    return r ? r.data : null;
+    var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    var scales = [640, 480, 360, 280];
+    for (var i = 0; i < scales.length; i++) {
+      var w = scales[i];
+      var h = Math.round(ih * w / iw);
+      if (!h || h < 60) continue;
+      var cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      var cx = cv.getContext("2d");
+      cx.drawImage(img, 0, 0, w, h);
+      var d = cx.getImageData(0, 0, w, h);
+      var r = window.jsQR(d.data, w, h, { inversionAttempts: "attemptBoth" });
+      if (r && r.data) return r.data;
+    }
   }catch(e){ return null; }
+  return null;
+}
+/* ===== SCAN KAMERA LANGSUNG (loop jsQR, 480px, 4x/detik) ===== */
+var CAM = null, CAMT = null, LOCK = false;
+function mulaiCam(){
+  if (LOCK) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert("Browser ini tidak mendukung kamera. Gunakan 🖼 PILIH FOTO atau ketik kode."); return;
+  }
+  if (CAM){ cleanCam(); }
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1280 } }, audio: false })
+    .then(function(st){
+      CAM = st; LOCK = false;
+      $("camBox").style.display = "block"; $("btnCam").textContent = "⏹ HENTIKAN";
+      var v = $("cam"); v.srcObject = st;
+      var pr = v.play(); if (pr && pr.catch) pr.catch(function(){});
+      CAMT = setInterval(scanFrame, 260);
+    })
+    .catch(function(e){
+      $("stScan").innerHTML = '<span class="err">Kamera tidak bisa diakses ('+esc((e&&e.message)||e)+'). Gunakan 🖼 PILIH FOTO atau ketik kode.</span>';
+    });
+}
+function scanFrame(){
+  if (LOCK || !window.jsQR) return;
+  var v = $("cam");
+  if (!v || !v.videoWidth) return;
+  var w = 480, h = Math.round(v.videoHeight * w / v.videoWidth);
+  if (!h) return;
+  var cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  var cx = cv.getContext("2d"); cx.drawImage(v, 0, 0, w, h);
+  try{
+    var d = cx.getImageData(0, 0, w, h);
+    var r = window.jsQR(d.data, w, h, { inversionAttempts: "attemptBoth" });
+    if (r && r.data){ LOCK = true; cleanCam(); prosesToken(r.data); }
+  }catch(e){}
+}
+function cleanCam(){
+  if (CAMT){ clearInterval(CAMT); CAMT = null; }
+  if (CAM){ try{ CAM.getTracks().forEach(function(t){ t.stop(); }); }catch(e){} CAM = null; }
+  $("camBox").style.display = "none"; $("btnCam").textContent = "📷 SCAN LANGSUNG";
 }
 function lanjutDeteksi(raw){
   if (!raw){
     $("stScan").innerHTML = '<span class="err">QR tidak terbaca — foto lagi lebih dekat/jelas, atau ketik kode manual.</span>';
     return;
   }
+  prosesToken(raw);
+}
+function prosesToken(raw){
+  cleanCam();
   $("stScan").innerHTML = "✔ QR terbaca: <b>"+esc(raw)+"</b> — mencari tamu…";
   google.script.run.withSuccessHandler(function(j){
-    if (!j.rows.length){ $("stScan").innerHTML = '<span class="err">Kode tidak dikenal: '+esc(raw)+'</span>'; return; }
-    window._rows = j.rows;
-    pilih(0);
-    $("stScan").innerHTML = "✔ QR terbaca: <b>"+esc(raw)+"</b>";
     var f = $("foto"); if (f) f.value = "";
+    if (!j.rows.length){
+      $("stScan").innerHTML = '<span class="err">Kode tidak dikenal: '+esc(raw)+'</span>';
+      $("hasil").style.display = "none"; $("hasilLista").style.display = "none";
+      return;
+    }
+    window._rows = j.rows;
+    if (j.rows.length === 1){ autoCheckin(j.rows[0]); }
+    else { pilih(0); }
   }).withFailureHandler(function(e){
     $("stScan").innerHTML = '<span class="err">✗ '+esc((e&&e.message)||e)+'</span>';
   }).cariTamu(raw);
+}
+function autoCheckin(g){
+  $("hasilLista").style.display = "none";
+  tampilMeja(g, "");
+  if (g.hadir !== "HADIR"){
+    $("stMeja").innerHTML = '<span class="mb-err">✘ TAMU BELUM KONFIRMASI HADIR — minta tamu konfirmasi via link undangan dulu.</span>';
+    return;
+  }
+  if (g.checkin_waktu){
+    $("stMeja").innerHTML = '<span class="mb-ok">✔ SUDAH CHECK-IN SEBELUMNYA — '+esc(g.checkin_waktu)+'</span>';
+    return;
+  }
+  $("stMeja").innerHTML = '<span class="mb-ok">⏳ MENCATAT CHECK-IN…</span>';
+  google.script.run.withSuccessHandler(function(j){
+    if (j.ok){
+      var g2 = j.guest;
+      tampilMeja({ token:g2.token, nama:g2.nama, gender:g2.gender, jumlah:g2.jumlah,
+        meja_utama:g2.meja_utama, meja_istri:g2.meja_istri, checkin_waktu:g2.checkin_waktu },
+        '<span class="mb-ok">✔ CHECK-IN BERHASIL — TAMPIL DI LAYAR TV</span>');
+    } else {
+      $("stMeja").innerHTML = '<span class="mb-err">✗ '+esc(j.error)+'</span>';
+    }
+  }).withFailureHandler(function(e){
+    $("stMeja").innerHTML = '<span class="mb-err">✗ '+esc((e&&e.message)||e)+'</span>';
+  }).checkinTamu(g.token);
+}
+function tampilMeja(g, statusHtml){
+  $("hasil").style.display = "block";
+  var meja = (g.meja_utama && g.meja_utama !== "—")
+    ? esc(g.meja_utama)
+    : (g.meja_istri ? esc(g.meja_istri) : "?"); 
+  $("hasilIsi").innerHTML =
+    '<div class="mejabesar">'+
+      '<div class="mb-top">SELAMAT DATANG DI · PUSSENARHANUD</div>'+
+      '<div class="mb-ke">SILAKAN MENUJU</div>'+
+      '<div class="mb-meja">MEJA '+(g.meja_utama && g.meja_utama !== "—" ? esc(g.meja_utama) : (g.meja_istri ? esc(g.meja_istri) : "—"))+'</div>'+
+      (g.meja_istri ? '<div class="mb-sub">💐 PENDAMPING / ISTRI → '+esc(g.meja_istri)+'</div>' : '')+
+      '<div class="mb-nama">'+esc(g.nama)+'</div>'+
+      '<div class="mb-sub">'+(g.hadir==="HADIR" ? (g.jumlah||1)+" orang" : esc(g.hadir||"belum konfirmasi"))+' · HUT ke-80 Arhanud</div>'+
+      '<div id="stMeja">'+(statusHtml||'<span class="mb-ok">✔ CHECK-IN TERCATAT</span>')+'</div>'+
+    '</div>'+
+    '<button class="b2" onclick="reset()" style="width:100%;margin-top:8px">↩ CARI / SCAN LAGI</button>';
 }
 </script>
 </body>
