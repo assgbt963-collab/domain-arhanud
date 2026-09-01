@@ -120,6 +120,9 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
         <span class="badge-baru" id="badgeBaru" style="display:none;background:#f2c63d;color:#111;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:900">BARU</span>
       </div>
       <div id="baruBox"><p class="muted">Belum ada tamu check-in.</p></div>
+      <div id="beHint" style="display:none;margin-top:8px;background:#3a2a10;border:1px solid #f0c33a;color:#ffe08a;border-radius:10px;padding:8px 12px;font-size:12px">
+        ⚠ <b>Backend belum v7.11.</b> Feed memakai data rekap (tanpa suara/badge) dan tombol SUSUN MEJA OTOMATIS belum aktif — tempel <b>KODE-GS-V7.txt</b> ke Kode.gs lalu Deploy → New version.
+      </div>
     </div>
 
     <div class="card" style="overflow-x:auto">
@@ -211,7 +214,16 @@ function muat(){
         '<td><button class="b2" onclick="qrUlang(\''+g.token+'\')">📨 QR Ulang</button></td></tr>';
     }).join("") || '<tr><td colspan="7" class="muted">Belum ada tamu.</td></tr>';
     // Feed check-in real-time (langsung dari hasil checkinTamu petugas)
-    var baru = j.terbaru || [];
+    var BE_BARU = !!j.terbaru; // backend v7.11?
+    var baru = j.terbaru;
+    if (!baru){ // backend lama: susun dari rekap (tetap jalan, tanpa notifikasi)
+      baru = j.rows.filter(function(g){ return g.checkin_waktu; })
+        .sort(function(a,b){ return a.checkin_waktu < b.checkin_waktu ? 1 : -1; })
+        .slice(0,8).map(function(g){ return { nama:g.nama, meja_utama:g.meja_utama,
+          meja_istri:g.meja_istri, waktu:g.checkin_waktu, petugas:g.petugas||"" }; });
+    }
+    var hint = $("beHint");
+    if (hint) hint.style.display = BE_BARU ? "none" : "block";
     var bb = $("badgeBaru");
     if (baru.length){
       var lama = window.__JKADAR || 0;
