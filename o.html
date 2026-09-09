@@ -219,7 +219,7 @@ function muat(){
         '<td>'+(g.hadir==="HADIR"?mejaBadge(g):'<span class="muted">—</span>')+'</td>'+
         '<td>'+stBadge(g.hadir)+'<br><span class="muted">'+esc(g.invite_status==="terkirim"?"undangan terkirim":g.invite_status)+'</span></td>'+
         '<td>'+(g.checkin_waktu?esc(g.checkin_waktu):'<span class="muted">—</span>')+'</td>'+
-        '<td><button class="b2" onclick="qrUlang(\''+g.token+'\')">📨 QR Ulang</button></td></tr>';
+        '<td><button class="b2" onclick="qrUlang(\''+g.token+'\')">📨 QR Ulang</button> <button class="b2" style="border-color:#c0392b;color:#ff8a7a" onclick="hapusTamu(\''+g.token+'\',\''+esc(g.nama).replace(/'/g,"")+'\')">🗑</button></td></tr>';
     }).join("") || '<tr><td colspan="7" class="muted">Belum ada tamu.</td></tr>';
     // Feed check-in real-time (langsung dari hasil checkinTamu petugas)
     var BE_BARU = !!j.terbaru; // backend v7.11?

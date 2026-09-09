@@ -222,7 +222,7 @@ function muat(){
     $("tbl").getElementsByTagName("tbody")[0].innerHTML = j.rows.map(function(g){
       return '<tr><td><b>'+esc(g.nama)+'</b><br><span class="muted">'+esc(g.org||"—")+'</span></td>'+
         '<td>'+esc(g.hp)+'</td><td>'+badgeKirim(g.invite_status)+'</td>'+
-        '<td><button class="b2" onclick="kirimUlang(\''+g.token+'\',\''+esc(g.nama).replace(/'/g,"")+'\')">📨 Kirim Ulang</button></td></tr>';
+        '<td><button class="b2" onclick="kirimUlang(\''+g.token+'\',\''+esc(g.nama).replace(/'/g,"")+'\')">📨 Kirim Ulang</button> <button class="b2" style="border-color:#c0392b;color:#ff8a7a" onclick="hapusTamu(\''+g.token+'\',\''+esc(g.nama).replace(/'/g,"")+'\')">🗑 Hapus</button></td></tr>';
     }).join("") || '<tr><td colspan="4" class="muted">Belum ada tamu.</td></tr>';
     window._g0 = j.rows[0] || null;
     muatStatus(); muatLog(); muatFormat();
@@ -343,6 +343,37 @@ function fillTag(x, g){
              panitia:"Panitia HUT ke-80 Arhanud",
              link:"https://undangan.arhanud80.online/k.html?t=CONTOH123" };
   return String(x||"").replace(/\{nama\}/g,st.nama).replace(/\{tanggal\}/g,st.tanggal)
+    .replace(/\{waktu\}/g,st.waktu).replace(/\{tempat\}/g,st.tempat)
+    .replace(/\{link\}/g,st.link).replace(/\{panitia\}/g,st.panitia);
+}
+function previewFmt(){
+  var g = window._g0 || null;
+  var b = fillTag($("fBroadcast").value, g) || "(kosong)";
+  var q = fillTag($("fQr").value, g) || "(kosong)";
+  confirm("PREVIEW PESAN UNDANGAN:\n\n" + b + "\n\n———————\n\nPREVIEW PESAN KARTU QR:\n\n" + q);
+}
+function simpanFmt(){
+  $("stFmt").textContent="⏳ Menyimpan format…";
+  google.script.run.withSuccessHandler(function(j){
+    $("stFmt").innerHTML = j.ok
+      ? '<span class="ok">✔ Format tersimpan — berlaku untuk pengiriman berikutnya.</span>'
+      : '<span class="err">✗ '+esc(j.error)+'</span>';
+  }).withFailureHandler(function(e){
+    $("stFmt").innerHTML='<span class="err">✗ '+fmtErr(e)+'</span>';
+  }).saveWaFormat($("fBroadcast").value, $("fQr").value);
+}
+function resetFmt(){
+  if(!confirm("Kembalikan format pesan WA ke bawaan sistem?")) return;
+  google.script.run.withSuccessHandler(function(j){
+    if(j.ok){ muatFormat(); $("stFmt").textContent="Format dikembalikan ke bawaan."; }
+  }).withFailureHandler(function(e){
+    $("stFmt").innerHTML='<span class="err">✗ '+fmtErr(e)+'</span>';
+  }).resetWaFormat();
+}
+</script>
+</body>
+</html>
+ma).replace(/\{tanggal\}/g,st.tanggal)
     .replace(/\{waktu\}/g,st.waktu).replace(/\{tempat\}/g,st.tempat)
     .replace(/\{link\}/g,st.link).replace(/\{panitia\}/g,st.panitia);
 }
