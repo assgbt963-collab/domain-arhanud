@@ -5,23 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal HUT ke-80 Arhanud</title>
 <style>
+  /* FULLSCREEN v7.12: portal memenuhi layar di HP, laptop & TV */
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#050505;color:#f1e9d0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100dvh;
-       display:flex;align-items:center;justify-content:center;padding:20px 12px}
-  .wrap{width:min(560px,94vw);text-align:center}
-  .logo{width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,.6));display:block;margin:0 auto 10px}
-  .small{color:#d8aa2b;font-weight:800;letter-spacing:2px;font-size:13px}
-  h1{color:#f2c63d;font-size:clamp(24px,6vw,34px);font-weight:900;letter-spacing:.5px;margin:2px 0 4px}
-  .sub{color:#9a9a9a;font-size:12px;margin-bottom:22px}
-  .menu{display:flex;flex-direction:column;gap:12px}
-  .menu a{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;
+  html,body{width:100%;min-height:100%}
+  body{background:radial-gradient(circle at 50% 0%,#1a1a1a 0%,#050505 60%,#000 100%);color:#f1e9d0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100dvh;
+       display:flex;align-items:center;justify-content:center;padding:clamp(12px,3vmin,36px) clamp(10px,3vw,32px)}
+  .wrap{width:min(1100px,96vw);text-align:center;margin:auto}
+  .logo{width:clamp(88px,14vmin,150px);height:clamp(88px,14vmin,150px);object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,.6));display:block;margin:0 auto clamp(6px,1.5vmin,14px)}
+  .small{color:#d8aa2b;font-weight:800;letter-spacing:clamp(1px,.5vw,4px);font-size:clamp(12px,2.4vmin,18px)}
+  h1{color:#f2c63d;font-size:clamp(26px,5.5vmin,52px);font-weight:900;letter-spacing:.5px;margin:2px 0 4px;line-height:1.05;text-shadow:0 0 30px rgba(242,198,61,.25)}
+  .sub{color:#9a9a9a;font-size:clamp(12px,2.2vmin,18px);margin-bottom:clamp(14px,3vmin,28px)}
+  .menu{display:flex;flex-direction:column;gap:clamp(10px,2vmin,18px)}
+  .menu a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:clamp(14px,2.6vmin,24px) clamp(16px,3vw,28px);
     border:1px solid #d8aa2b;border-radius:14px;background:linear-gradient(145deg,#1d1d1d,#101010);
-    color:#f1e9d0;text-decoration:none;font-weight:800;font-size:16px;letter-spacing:.3px}
-  .menu a em{font-style:normal;color:#777;font-size:11px;font-weight:600}
-  .menu a:hover{border-color:#f2c63d;box-shadow:0 0 14px rgba(216,170,43,.18)}
-  .note{margin-top:14px;font-size:11px;color:#666;line-height:1.5}
+    color:#f1e9d0;text-decoration:none;font-weight:800;font-size:clamp(15px,2.8vmin,22px);letter-spacing:.3px}
+  .menu a em{font-style:normal;color:#777;font-size:.65em;font-weight:600;text-align:right}
+  .menu a:hover{border-color:#f2c63d;box-shadow:0 0 14px rgba(216,170,43,.18);transform:translateY(-1px)}
+  .note{margin-top:clamp(10px,2vmin,18px);font-size:clamp(11px,2vmin,15px);color:#666;line-height:1.5}
   .note b{color:#d8aa2b}
-  .foot{margin-top:20px;font-size:10px;color:#555;line-height:1.5}
+  .foot{margin-top:clamp(14px,2.5vmin,24px);font-size:clamp(10px,1.9vmin,14px);color:#555;line-height:1.6}
+  /* Layar lebar (laptop/TV): 3 menu jadi kartu berdampingan */
+  @media (min-width:900px){
+    .menu{flex-direction:row;align-items:stretch}
+    .menu a{flex:1;flex-direction:column;justify-content:center;gap:8px;text-align:center;min-height:clamp(130px,22vmin,190px)}
+    .menu a em{text-align:center}
+  }
 </style>
 </head>
 <body>
@@ -36,7 +44,7 @@
     <a href="t.html">📷 PETUGAS <em>scan QR & check-in</em></a>
   </div>
   <div class="note">Link konfirmasi untuk tamu dikirim via WhatsApp — <b>tidak ditampilkan di portal ini.</b></div>
-  <div class="foot"><a href="tv.html" target="_blank" style="color:#d8aa2b;font-weight:800">📺 LAYAR MONITOR / TV (penerima tamu)</a><br><br>Sistem Undangan HUT ke-80 Arhanud · v.7.11</div>
+  <div class="foot"><a href="tv.html" target="_blank" style="color:#d8aa2b;font-weight:800">📺 LAYAR MONITOR / TV (penerima tamu)</a><br><br>Sistem Undangan HUT ke-80 Arhanud · v.7.12</div>
 </div>
 </body>
 </html>

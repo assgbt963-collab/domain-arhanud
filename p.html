@@ -5,34 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panitia — Input Tamu &amp; Kirim Undangan</title>
 <style>
+  /* FULLSCREEN v7.12: panitia memenuhi layar di HP, laptop & TV */
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#050505;color:#f1e9d0;font-family:'Segoe UI',system-ui,sans-serif;padding:14px 10px 40px}
-  .wrap{max-width:860px;margin:0 auto}
+  body{background:#050505;color:#f1e9d0;font-family:'Segoe UI',system-ui,sans-serif;padding:clamp(10px,2vmin,24px) clamp(8px,2vw,28px) 40px;min-height:100dvh}
+  .wrap{width:min(1500px,98vw);margin:0 auto}
   .nav{display:flex;gap:6px;justify-content:center;margin-bottom:10px;flex-wrap:wrap}
-  .nav a{color:#d8aa2b;border:1px solid #d8aa2b;border-radius:20px;padding:6px 14px;font-size:12px;text-decoration:none;background:#151515}
+  .nav a{color:#d8aa2b;border:1px solid #d8aa2b;border-radius:20px;padding:clamp(6px,1.2vmin,10px) clamp(12px,2vw,20px);font-size:clamp(12px,2vmin,15px);text-decoration:none;background:#151515;white-space:nowrap}
   .nav a.on{background:#d8aa2b;color:#111;font-weight:700}
-  .logo{width:88px;height:88px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));margin:0 auto 8px;display:block}
-  h1{font-size:17px;color:#d8aa2b;letter-spacing:2px;text-align:center;margin-bottom:4px}
-  .sub{text-align:center;font-size:12px;color:#b8a86a;margin-bottom:12px}
-  .card{background:rgba(32,32,32,.97);border:1px solid rgba(216,170,43,.35);border-radius:14px;padding:14px;margin-bottom:12px}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:12px}
-  .st{background:rgba(32,32,32,.97);border:1px solid rgba(216,170,43,.3);border-radius:12px;padding:10px;text-align:center}
-  .st b{display:block;font-size:24px;color:#d8aa2b}
-  .st span{font-size:11px;color:#b8a86a}
-  input,select,button{border-radius:10px;padding:10px;border:none;font-size:14px;margin:3px 0}
+  .logo{width:clamp(72px,10vmin,110px);height:clamp(72px,10vmin,110px);object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));margin:0 auto 8px;display:block}
+  h1{font-size:clamp(15px,3vmin,24px);color:#d8aa2b;letter-spacing:2px;text-align:center;margin-bottom:4px}
+  .sub{text-align:center;font-size:clamp(12px,2.2vmin,15px);color:#b8a86a;margin-bottom:12px}
+  .card{background:rgba(32,32,32,.97);border:1px solid rgba(216,170,43,.35);border-radius:14px;padding:clamp(12px,2.2vmin,20px);margin-bottom:12px;min-width:0}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(110px,16vw,170px),1fr));gap:clamp(8px,1.5vmin,14px);margin-bottom:12px}
+  .st{background:rgba(32,32,32,.97);border:1px solid rgba(216,170,43,.3);border-radius:12px;padding:clamp(10px,2vmin,16px);text-align:center}
+  .st b{display:block;font-size:clamp(22px,4.5vmin,36px);color:#d8aa2b}
+  .st span{font-size:clamp(11px,2vmin,14px);color:#b8a86a}
+  input,select,button{border-radius:10px;padding:clamp(9px,1.8vmin,14px) 12px;border:none;font-size:clamp(14px,2.4vmin,17px);margin:3px 0}
   input,select{background:#111;color:#fff;border:1px solid #333}
-  button{background:linear-gradient(180deg,#f0c33a,#b68716);color:#131313;font-weight:700;cursor:pointer}
-  .b2{background:#1d1d1d;color:#d8aa2b;border:1px solid #d8aa2b;font-size:12px;padding:6px 10px}
+  button{background:linear-gradient(180deg,#f0c33a,#b68716);color:#131313;font-weight:700;cursor:pointer;white-space:nowrap}
+  .b2{background:#1d1d1d;color:#d8aa2b;border:1px solid #d8aa2b;font-size:clamp(12px,2.2vmin,15px);padding:clamp(6px,1.4vmin,10px) clamp(10px,2vw,16px)}
   .ok{color:#5fe08f;font-weight:700}.err{color:#ff8a8a;font-weight:700}.blm{color:#9a8f6e}
-  .muted{color:#9a8f6e;font-size:12px}
+  .muted{color:#9a8f6e;font-size:clamp(12px,2.2vmin,15px)}
   .frow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-  .frow input{flex:1;min-width:130px}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th{color:#d8aa2b;text-align:left;padding:6px;border-bottom:1px solid #444;font-size:11px;letter-spacing:1px}
-  td{padding:6px;border-bottom:1px solid #262626;vertical-align:top}
-  #pinGate{text-align:center;padding:30px}
+  .frow input{flex:1;min-width:min(180px,100%)}
+  .frow button{flex:0 0 auto}
+  table{width:100%;border-collapse:collapse;font-size:clamp(13px,2.2vmin,16px)}
+  th{color:#d8aa2b;text-align:left;padding:clamp(6px,1.2vmin,10px);border-bottom:1px solid #444;font-size:clamp(11px,2vmin,14px);letter-spacing:1px;white-space:nowrap}
+  td{padding:clamp(6px,1.2vmin,10px);border-bottom:1px solid #262626;vertical-align:top}
+  #pinGate{text-align:center;padding:clamp(24px,5vmin,40px);max-width:520px;margin:0 auto}
   #pinGate input{font-size:20px;text-align:center;letter-spacing:4px}
   .btnLine{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+  /* FULLSCREEN: layar lebar (laptop/TV) jadi 2 kolom; kartu berisi tabel membentang penuh */
+  @media (min-width:1100px){
+    #app{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+    #app>.stats{grid-column:1/-1}
+    #app>.card{margin-bottom:0}
+    #app>.card:has(table){grid-column:1/-1}
+  }
 </style>
 <script>
 /* ====== RPC SHIM v7.7 (fetch-first, fallback JSONP) ====== */

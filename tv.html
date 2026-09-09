@@ -23,6 +23,7 @@
   selama 10 detik (dengan suara 'ding-dong' + kilatan emas), lalu kembali standby.
 -->
 <style>
+  /* FULLSCREEN v7.12: font & kotak membesar mengikuti ukuran layar TV/laptop/HP */
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{width:100%;height:100%}
   body{background:#000;color:#f1e9d0;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
@@ -30,18 +31,18 @@
   .tv{min-height:0}
 
   /* ---- BARIS ATAS (selalu tampil: mode, jumlah, jam, koneksi) ---- */
-  .top{flex:0 0 auto;display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;
-    padding:10px 16px 8px;border-bottom:1px solid rgba(216,170,43,.25)}
+  .top{flex:0 0 auto;display:flex;align-items:center;gap:10px clamp(10px,2vw,24px);flex-wrap:wrap;
+    padding:clamp(8px,1.8vh,18px) clamp(12px,2.5vw,32px);border-bottom:1px solid rgba(216,170,43,.25)}
   .mode{display:flex;flex-direction:column;min-width:0}
-  .mode .tt{color:#d8aa2b;font-size:clamp(12px,2.2vh,20px);font-weight:900;letter-spacing:2px;white-space:nowrap}
-  .mode .ss{color:#8f8f8f;font-size:clamp(10px,1.8vh,15px);white-space:nowrap}
-  .tamutiba{margin-left:auto;text-align:right;color:#d8aa2b;font-size:clamp(11px,2vh,17px);font-weight:800;white-space:nowrap}
-  .tamutiba b{color:#f2c63d;font-size:clamp(18px,3.4vh,30px)}
+  .mode .tt{color:#d8aa2b;font-size:clamp(12px,2.4vh,28px);font-weight:900;letter-spacing:2px;white-space:nowrap}
+  .mode .ss{color:#8f8f8f;font-size:clamp(10px,2vh,20px);white-space:nowrap}
+  .tamutiba{margin-left:auto;text-align:right;color:#d8aa2b;font-size:clamp(11px,2.2vh,24px);font-weight:800;white-space:nowrap}
+  .tamutiba b{color:#f2c63d;font-size:clamp(18px,3.8vh,46px)}
   .jam{text-align:right;white-space:nowrap}
-  .jam .t{color:#d8aa2b;font-size:clamp(20px,4vh,36px);font-weight:900;line-height:1.05;font-variant-numeric:tabular-nums}
-  .jam .d{color:#9a9a9a;font-size:clamp(10px,1.8vh,15px)}
+  .jam .t{color:#d8aa2b;font-size:clamp(20px,4.4vh,56px);font-weight:900;line-height:1.05;font-variant-numeric:tabular-nums}
+  .jam .d{color:#9a9a9a;font-size:clamp(10px,2vh,20px)}
   .cn{display:inline-flex;align-items:center;gap:6px;border:1px solid #444;border-radius:999px;
-    padding:4px 10px;font-size:clamp(10px,1.8vh,15px);font-weight:800;white-space:nowrap;color:#bbb}
+    padding:clamp(4px,1vh,10px) clamp(10px,1.6vw,18px);font-size:clamp(10px,2vh,20px);font-weight:800;white-space:nowrap;color:#bbb}
   .cn .dot{width:9px;height:9px;border-radius:50%;background:#666}
   .cn.ok{border-color:#2e7d46;color:#8fdc9f}.cn.ok .dot{background:#3ddc6a;box-shadow:0 0 8px #3ddc6a}
   .cn.wait{border-color:#8a6d1f;color:#f2c63d}.cn.wait .dot{background:#f2c63d;animation:bl 1s infinite}
@@ -53,45 +54,45 @@
     align-items:center;justify-content:center;width:100%;
     background:radial-gradient(circle at 50% 0%,#141414 0%,#000 65%)}
   .view{display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;width:100%;max-width:1000px;padding:18px 16px 0}
+    text-align:center;width:100%;max-width:min(1600px,98vw);padding:clamp(10px,2.5vmin,28px) clamp(12px,3vw,40px) 0}
   .view.off{display:none!important}
-  .logo{width:clamp(72px,11vh,120px);height:clamp(72px,11vh,120px);object-fit:contain;margin-bottom:10px}
-  .kecil{color:#d8aa2b;font-size:clamp(13px,2.6vh,22px);font-weight:800;letter-spacing:clamp(2px,.8vw,8px)}
-  .jumbo{color:#f2c63d;font-size:clamp(28px,7vh,64px);font-weight:900;letter-spacing:clamp(1px,.4vw,4px);
+  .logo{width:clamp(72px,12vh,170px);height:clamp(72px,12vh,170px);object-fit:contain;margin-bottom:clamp(6px,1.5vh,14px)}
+  .kecil{color:#d8aa2b;font-size:clamp(13px,3vh,32px);font-weight:800;letter-spacing:clamp(2px,.8vw,10px)}
+  .jumbo{color:#f2c63d;font-size:clamp(28px,8.5vh,110px);font-weight:900;letter-spacing:clamp(1px,.4vw,6px);
     line-height:1.05;text-shadow:0 0 34px rgba(242,198,61,.3)}
-  .orn{display:flex;align-items:center;justify-content:center;gap:12px;width:min(80vw,560px);
+  .orn{display:flex;align-items:center;justify-content:center;gap:12px;width:min(88vw,900px);
     margin:clamp(8px,2.4vh,24px) auto}
   .orn .ln{height:2px;flex:1;background:linear-gradient(90deg,transparent,#d8aa2b)}
   .orn .ln.r{background:linear-gradient(90deg,#d8aa2b,transparent)}
   .orn .dm{color:#f2c63d;font-size:15px}
-  .kotak{border:2px solid #d8aa2b;border-radius:24px;padding:clamp(14px,3.6vh,34px) clamp(22px,5vw,64px);
+  .kotak{border:2px solid #d8aa2b;border-radius:clamp(18px,3vmin,30px);padding:clamp(14px,4vh,48px) clamp(22px,6vw,96px);
     background:linear-gradient(160deg,rgba(32,32,32,.95),rgba(8,8,8,.98));
-    box-shadow:0 0 40px rgba(216,170,43,.18);max-width:94vw}
-  .kotak .atas{color:#efefef;font-size:clamp(16px,3.6vh,32px);font-weight:800;letter-spacing:clamp(1px,.5vw,5px)}
-  .kotak .nomor{color:#f2c63d;font-size:clamp(40px,16vh,150px);font-weight:900;line-height:1.05;
+    box-shadow:0 0 40px rgba(216,170,43,.18);width:min(1200px,94vw);max-width:96vw}
+  .kotak .atas{color:#efefef;font-size:clamp(16px,4.2vh,46px);font-weight:800;letter-spacing:clamp(1px,.5vw,6px)}
+  .kotak .nomor{color:#f2c63d;font-size:clamp(40px,17vh,200px);font-weight:900;line-height:1.05;
     margin-top:4px;text-shadow:0 0 40px rgba(242,198,61,.45)}
   .kotak .nomor small{font-size:.34em;font-weight:800;letter-spacing:.08em;display:block;margin-top:4px;color:#f2c63d}
-  .nama{color:#fff;font-size:clamp(16px,3.4vh,30px);font-weight:700;margin-top:clamp(8px,2.4vh,20px)}
-  .pangkuan{color:#f2c63d;font-size:clamp(13px,2.4vh,21px);font-weight:700;margin-top:6px}
-  .info{color:#9a9a9a;font-size:clamp(11px,2vh,17px);margin-top:8px;line-height:1.5}
+  .nama{color:#fff;font-size:clamp(16px,4vh,44px);font-weight:700;margin-top:clamp(8px,2.4vh,20px)}
+  .pangkuan{color:#f2c63d;font-size:clamp(13px,3vh,30px);font-weight:700;margin-top:6px}
+  .info{color:#9a9a9a;font-size:clamp(11px,2.4vh,24px);margin-top:8px;line-height:1.5}
   .warn{display:none;margin-top:10px;background:#3a2a10;border:1px solid #f0c33a;color:#ffe08a;
-    border-radius:12px;padding:clamp(8px,2vh,14px) clamp(14px,3vw,26px);font-size:clamp(12px,2.2vh,19px);
+    border-radius:12px;padding:clamp(8px,2vh,16px) clamp(14px,3vw,30px);font-size:clamp(12px,2.6vh,28px);
     font-weight:800;max-width:92vw}
   .warn.on{display:block}
-  .idle-msg{color:#8a8a8a;font-size:clamp(13px,2.4vh,20px);margin-top:14px;letter-spacing:1px;
+  .idle-msg{color:#8a8a8a;font-size:clamp(13px,2.8vh,28px);margin-top:14px;letter-spacing:1px;
     animation:bl 2.4s ease-in-out infinite}
-  .jam2{color:#d8aa2b;font-size:clamp(38px,11vh,100px);font-weight:900;letter-spacing:4px;
+  .jam2{color:#d8aa2b;font-size:clamp(38px,12vh,150px);font-weight:900;letter-spacing:4px;
     margin-top:10px;font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(216,170,43,.3)}
-  .tgl2{color:#7c7c7c;font-size:clamp(11px,2vh,17px);margin-top:2px}
+  .tgl2{color:#7c7c7c;font-size:clamp(11px,2.4vh,24px);margin-top:2px}
   .pulse{animation:pop .55s ease}
   @keyframes pop{0%{transform:scale(.9);opacity:.35}100%{transform:scale(1);opacity:1}}
 
   /* ---- BARIS BAWAH (selalu tampil) ---- */
   .foot{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:12px;
-    color:#cfc6a5;padding:12px 16px 16px;border-top:1px solid rgba(216,170,43,.25)}
-  .foot .icn{font-size:clamp(20px,3.4vh,30px);line-height:1}
-  .foot .ft{text-align:left;font-size:clamp(11px,2vh,17px);line-height:1.3}
-  .foot .ft b{color:#d8aa2b;font-size:clamp(13px,2.3vh,20px)}
+    color:#cfc6a5;padding:clamp(8px,1.8vh,18px) clamp(12px,2.5vw,32px);border-top:1px solid rgba(216,170,43,.25)}
+  .foot .icn{font-size:clamp(20px,3.8vh,44px);line-height:1}
+  .foot .ft{text-align:left;font-size:clamp(11px,2.4vh,24px);line-height:1.3}
+  .foot .ft b{color:#d8aa2b;font-size:clamp(13px,2.6vh,28px)}
 
   /* ---- Efek: kilatan emas + tombol suara ---- */
   .flashbox{position:fixed;inset:0;pointer-events:none;z-index:60;
