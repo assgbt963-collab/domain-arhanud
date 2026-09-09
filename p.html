@@ -185,6 +185,7 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
       </tr></thead><tbody></tbody></table>
       <div style="margin-top:10px">
         <button class="b2" onclick="isiContoh()">📥 ISI DATA CONTOH (16 TAMU)</button>
+        <button class="b2" style="border-color:#c0392b;color:#ff8a7a" onclick="hapusSemua()">🗑 HAPUS SEMUA TAMU</button>
       </div>
     </div>
 
@@ -225,6 +226,7 @@ function muat(){
         '<td><button class="b2" onclick="kirimUlang(\''+g.token+'\',\''+esc(g.nama).replace(/'/g,"")+'\')">📨 Kirim Ulang</button> <button class="b2" style="border-color:#c0392b;color:#ff8a7a" onclick="hapusTamu(\''+g.token+'\',\''+esc(g.nama).replace(/'/g,"")+'\')">🗑 Hapus</button></td></tr>';
     }).join("") || '<tr><td colspan="4" class="muted">Belum ada tamu.</td></tr>';
     window._g0 = j.rows[0] || null;
+    window._jmlTamu = j.rows.length;
     muatStatus(); muatLog(); muatFormat();
   }).withFailureHandler(function(e){
     $("stats").innerHTML='<div class="st" style="grid-column:1/-1"><b style="color:#ff6b6b">✗</b><span>'+esc((e&&e.message)||e)+'</span></div>';
@@ -269,6 +271,32 @@ function kirimUlang(token, nama){
     alert(j.ok ? "✔ Terkirim ("+j.sent+")" : "✗ "+j.error);
     muat();
   }).kirimUlang(token);
+}
+/* ===== HAPUS TAMU v7.13 (butuh fungsi backend hapusTamu/hapusSemuaTamu) ===== */
+function hapusTamu(token, nama){
+  if(!confirm("HAPUS tamu ini secara permanen?\n"+nama+"\n\nData dihapus dari sheet dan tidak bisa dikembalikan.")) return;
+  google.script.run.withSuccessHandler(function(j){
+    if(j.ok){ alert("🗑 Dihapus: "+(j.nama||nama)); }
+    else if(String(j.error||"").indexOf("Fungsi tidak dikenal")>=0){
+      alert("✗ Backend belum mendukung hapus.\nTempel file HAPUS-TAMU-Code.gs ke Code.gs lalu Deploy → New version.");
+    }
+    else alert("✗ "+j.error);
+    muat();
+  }).withFailureHandler(function(e){ alert("✗ "+((e&&e.message)||e)); }).hapusTamu(token);
+}
+function hapusSemua(){
+  var n = window._jmlTamu||0;
+  if(!n){ alert("Daftar tamu sudah kosong."); return; }
+  if(!confirm("HAPUS SEMUA ("+n+" tamu) secara permanen?\n\nSeluruh daftar tamu di sheet akan dihapus.\nLanjut?")) return;
+  if(!confirm("YAKIN 100%? Ini tidak bisa dibatalkan.\nTekan OK untuk menghapus "+n+" tamu.")) return;
+  google.script.run.withSuccessHandler(function(j){
+    if(j.ok){ alert("🗑 "+j.jumlah+" tamu dihapus. Sheet kosong."); }
+    else if(String(j.error||"").indexOf("Fungsi tidak dikenal")>=0){
+      alert("✗ Backend belum mendukung hapus.\nTempel file HAPUS-TAMU-Code.gs ke Code.gs lalu Deploy → New version.");
+    }
+    else alert("✗ "+j.error);
+    muat();
+  }).withFailureHandler(function(e){ alert("✗ "+((e&&e.message)||e)); }).hapusSemuaTamu();
 }
 function tesKirim(){
   var n=$("ntes").value.trim();

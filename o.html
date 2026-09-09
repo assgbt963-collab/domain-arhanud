@@ -302,6 +302,18 @@ function qrUlang(token){
     alert(j.ok ? ("QR dikirim: "+j.wa) : j.error);
   }).kirimQrUlang(token);
 }
+/* ===== HAPUS TAMU v7.13 (butuh fungsi backend hapusTamu) ===== */
+function hapusTamu(token, nama){
+  if(!confirm("HAPUS tamu ini secara permanen?\n"+nama+"\n\nData dihapus dari sheet dan tidak bisa dikembalikan.")) return;
+  google.script.run.withSuccessHandler(function(j){
+    if(j.ok){ alert("🗑 Dihapus: "+(j.nama||nama)); }
+    else if(String(j.error||"").indexOf("Fungsi tidak dikenal")>=0){
+      alert("✗ Backend belum mendukung hapus.\nTempel file HAPUS-TAMU-Code.gs ke Code.gs lalu Deploy → New version.");
+    }
+    else alert("✗ "+j.error);
+    muat();
+  }).withFailureHandler(function(e){ alert("✗ "+((e&&e.message)||e)); }).hapusTamu(token);
+}
 </script>
 </body>
 </html>
