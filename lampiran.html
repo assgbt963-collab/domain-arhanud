@@ -345,8 +345,9 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
         <div class="inv-box rv">
           <h4><svg><use href="#i-info"/></svg>KETERANGAN</h4>
           <p>Dimohon hadir 15 menit sebelum acara dimulai.<br>Konfirmasi kehadiran melalui WA :</p>
-          <div class="contact-line"><p>Letkol Arh Rizki Prima<br><span style="font-weight:600;color:var(--muted)">0812-3468-8215</span></p><a class="wa-link" data-wa="0" target="_blank" rel="noopener" aria-label="WhatsApp Letkol Arh Rizki Prima"><svg><use href="#i-wa"/></svg></a></div>
-          <div class="contact-line"><p>Mayor Arh Ina R<br><span style="font-weight:600;color:var(--muted)">0812-6000-653</span></p><a class="wa-link" data-wa="1" target="_blank" rel="noopener" aria-label="WhatsApp Mayor Arh Ina R"><svg><use href="#i-wa"/></svg></a></div>
+          <div class="contact-line"><p>Panitia<br><span style="font-weight:600;color:var(--muted)">+62 819-3427-0185</span></p><a class="wa-link" data-wa="0" target="_blank" rel="noopener" aria-label="WhatsApp Panitia"><svg><use href="#i-wa"/></svg></a></div>
+          <div class="contact-line"><p>Letkol Arh Rizki Prima<br><span style="font-weight:600;color:var(--muted)">0812-3468-8215</span></p><a class="wa-link" data-wa="1" target="_blank" rel="noopener" aria-label="WhatsApp Letkol Arh Rizki Prima"><svg><use href="#i-wa"/></svg></a></div>
+          <div class="contact-line"><p>Mayor Arh Ina R<br><span style="font-weight:600;color:var(--muted)">0812-6000-653</span></p><a class="wa-link" data-wa="2" target="_blank" rel="noopener" aria-label="WhatsApp Mayor Arh Ina R"><svg><use href="#i-wa"/></svg></a></div>
         </div>
         <div class="inv-box rv d1">
           <h4><svg><use href="#i-shirt"/></svg>PAKAIAN</h4>
@@ -446,8 +447,9 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
         <a class="btn" id="tokenBtn"><svg><use href="#i-send"/></svg>KONFIRMASI &amp; KARTU QR</a>
       </div>
       <div class="cp-grid">
-        <div class="cp rv"><div class="av">RP</div><div><div class="nm">Letkol Arh Rizki Prima</div><div class="ph">0812-3468-8215</div></div><a class="btn wa wa-link" data-wa="0" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>CHAT</a></div>
-        <div class="cp rv d1"><div class="av">IR</div><div><div class="nm">Mayor Arh Ina R</div><div class="ph">0812-6000-653</div></div><a class="btn wa wa-link" data-wa="1" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>CHAT</a></div>
+        <div class="cp rv" style="border-color:var(--gold)"><div class="av">PN</div><div><div class="nm">Panitia</div><div class="ph">+62 819-3427-0185</div></div><a class="btn wa wa-link" data-wa="0" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>CHAT</a></div>
+        <div class="cp rv d1"><div class="av">RP</div><div><div class="nm">Letkol Arh Rizki Prima</div><div class="ph">0812-3468-8215</div></div><a class="btn wa wa-link" data-wa="1" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>CHAT</a></div>
+        <div class="cp rv d1"><div class="av">IR</div><div><div class="nm">Mayor Arh Ina R</div><div class="ph">0812-6000-653</div></div><a class="btn wa wa-link" data-wa="2" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>CHAT</a></div>
       </div>
       <form class="rsvp rv" id="rsvpForm">
         <h4>Atau isi formulir singkat</h4>
@@ -455,7 +457,7 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
         <div class="field"><label for="fSatuan">Satuan / Instansi</label><input id="fSatuan" placeholder="cth. Yonarhanud 3/YBY"></div>
         <div class="field"><label>Kehadiran</label><div class="choice"><input type="radio" name="hadir" id="h1" value="Hadir" checked><label for="h1">Hadir</label><input type="radio" name="hadir" id="h2" value="Berhalangan Hadir"><label for="h2">Berhalangan</label></div></div>
         <div class="field"><label for="fJml">Jumlah</label><select id="fJml"><option>1 orang</option><option>2 orang (beserta pendamping)</option></select></div>
-        <div class="field"><label for="fKe">Kirim ke</label><select id="fKe"><option value="0">Letkol Arh Rizki Prima</option><option value="1">Mayor Arh Ina R</option></select></div>
+        <div class="field"><label for="fKe">Kirim ke</label><select id="fKe"><option value="0">Panitia (+62 819-3427-0185)</option><option value="1">Letkol Arh Rizki Prima (0812-3468-8215)</option><option value="2">Mayor Arh Ina R (0812-6000-653)</option></select></div>
         <div class="field"><label for="fUcapan">Ucapan untuk HUT ke-80</label><textarea id="fUcapan" placeholder="Dirgahayu Arhanud TNI AD ke-80..."></textarea></div>
         <button class="btn wa" type="submit"><svg><use href="#i-wa"/></svg>KIRIM KONFIRMASI</button>
       </form>
@@ -522,8 +524,10 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
 
 <script>
 /* ================== KONFIGURASI ================== */
+const RPC_EXEC = "https://script.google.com/macros/s/AKfycbzYva5UXoRGtDmT0izrG4RaM4zwpklYDnK4O0ZgoON31nUj0ZEfJsxXPd9PZryIzFPSUw/exec";
 const CONFIG = {
   kontak : [
+    {nama:"Panitia",                wa:"6281934270185"},
     {nama:"Letkol Arh Rizki Prima", wa:"6281234688215"},
     {nama:"Mayor Arh Ina R",        wa:"628126000653"}
   ],
@@ -553,8 +557,8 @@ document.querySelectorAll('.bokeh').forEach(b=>{
 // Nama tamu dari URL ?to=
 try{const p=new URLSearchParams(location.search);const to=p.get('to')||p.get('kepada')||p.get('nama');
   if(to){guestName.textContent=to;guestInline.textContent=to;fNama.value=to;}
-  const tok=(p.get('t')||'').trim();
-  if(tok){tokenBox.hidden=false;rsvpForm.hidden=true;tokenBtn.href=CONFIG.konfirmasi+'?t='+encodeURIComponent(tok)+(to?'&nama='+encodeURIComponent(to):'');}}catch(e){}
+  window.__TOK = (p.get('t')||'').trim();
+}catch(e){}
 
 // ---------- Audio Hymne ----------
 const bgm=document.getElementById('bgm'), fab=document.getElementById('fab'), player=document.getElementById('player'), disc=document.getElementById('disc');
@@ -593,11 +597,27 @@ const waMsg=(extra)=>`Selamat pagi/siang/sore, izin konfirmasi kehadiran pada Ac
 document.querySelectorAll('.wa-link').forEach(a=>{const c=CONFIG.kontak[+a.dataset.wa];a.href='https://wa.me/'+c.wa+'?text='+encodeURIComponent(waMsg())});
 const toast=document.getElementById('toast');
 function showToast(t){toast.textContent=t;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3500)}
+function catatKonfirmasiKeServer(payload){
+  try{
+    const q = "mode=rpc&raw=1&fn=konfirmasiDariLampiran&cb=_c" + Math.floor(Math.random()*1e9)
+            + "&a1=" + encodeURIComponent(JSON.stringify(payload));
+    fetch(RPC_EXEC + "?" + q, {method:"GET", credentials:"omit", cache:"no-store"}).catch(()=>{});
+  }catch(err){}
+}
 rsvpForm.addEventListener('submit',e=>{e.preventDefault();
-  const c=CONFIG.kontak[+fKe.value],hadir=document.querySelector('input[name=hadir]:checked').value;
+  const c=CONFIG.kontak[+fKe.value]||CONFIG.kontak[0],hadir=document.querySelector('input[name=hadir]:checked').value;
+  const jmlAngka = parseInt(fJml.value, 10) || 1;
+  catatKonfirmasiKeServer({
+    tok: window.__TOK || "",
+    nama: fNama.value.trim(),
+    satuan: fSatuan.value.trim(),
+    hadir: hadir === "Hadir" ? "HADIR" : "TIDAK HADIR",
+    jumlah: jmlAngka,
+    ucapan: fUcapan.value.trim()
+  });
   const msg=`*KONFIRMASI KEHADIRAN*\nTradisi Laporan Korps Pati Arhanud & Syukuran HUT ke-80 Arhanud TNI AD\nSelasa, 17 November 2026 · 08.00 WIB\nAula R. Harsoyo Pussenarhanud\n\nNama : ${fNama.value.trim()}\nSatuan/Instansi : ${fSatuan.value.trim()||'-'}\nKehadiran : ${hadir}\nJumlah : ${fJml.value}\n\nUcapan :\n${fUcapan.value.trim()||'Dirgahayu Arhanud TNI AD ke-80!'}\n\n_Vyati Rakca Bhala Cakti_`;
   try{window.open('https://wa.me/'+c.wa+'?text='+encodeURIComponent(msg),'_blank')}catch(err){}
-  showToast('Terima kasih! Konfirmasi dikirim ke '+c.nama+'.');
+  showToast('Terima kasih! Konfirmasi tercatat & dikirim ke '+c.nama+'.');
 });
 
 // ---------- Reveal & nav aktif ----------
@@ -608,5 +628,5 @@ addEventListener('scroll',revealCheck,{passive:true});
 const links=[...document.querySelectorAll('nav.bnav a')],secs=links.map(a=>document.querySelector(a.getAttribute('href')));
 addEventListener('scroll',()=>{let idx=0;secs.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<innerHeight*.4)idx=i});links.forEach((a,i)=>a.classList.toggle('active',i===idx))},{passive:true});
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4c9763d18621564',t:'MTc5MjM0NjYyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
