@@ -68,7 +68,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 #cover{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;transition:transform 1.1s cubic-bezier(.77,0,.18,1)}
 #cover.open{transform:translateY(-100%)}
 #cover .top{position:relative;z-index:3;padding:calc(26px + env(safe-area-inset-top)) 24px 0}
-#cover .mid{position:relative;z-index:3;text-align:center;padding:4vh 22px 0}
+#cover .mid{position:relative;z-index:3;text-align:center;padding:calc(7vh + env(safe-area-inset-top)) 22px 0}
 #cover .logos{--lh:min(15vh,128px)}
 .yth{margin-top:3.2vh}
 .yth .k{font-weight:700;font-size:19px}
@@ -308,7 +308,6 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
 <div id="cover" class="cover-art" role="dialog" aria-label="Sampul undangan">
   <div class="sheen"></div>
   <div class="bokeh" data-n="26"></div>
-  <div class="top"><div class="brand"><b>PUSAT KESENJATAAN ARHANUD</b><span>TNI ANGKATAN DARAT</span></div></div>
   <div class="mid">
     <div class="logos"><img class="crest" data-src="crest" alt="Lambang Arhanud Vyati Rakca Bhala Cakti"><div class="l80-wrap"><img class="l80" data-src="logo80" alt="Logo HUT ke-80 Arhanud TNI AD"></div></div>
     <div class="yth">
@@ -326,8 +325,7 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
   <!-- panel samping desktop -->
   <aside class="side cover-art">
     <div class="sheen"></div><div class="bokeh" data-n="22"></div>
-    <div class="top"><div class="brand"><b>PUSAT KESENJATAAN ARHANUD</b><span>TNI ANGKATAN DARAT</span></div></div>
-    <div class="mid">
+      <div class="mid">
       <div class="logos"><img class="crest" data-src="crest" alt=""><div class="l80-wrap"><img class="l80" data-src="logo80" alt=""></div></div>
       <div class="ttl">Tradisi Laporan Korps Pati Arhanud<br>dan Syukuran HUT ke-80<br>Arhanud TNI AD</div>
       <div class="dt">Selasa, 17 November 2026 · 08.00 WIB<br>Aula R. Harsoyo Pussenarhanud</div>
@@ -347,7 +345,7 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
         <div class="inv-box rv">
           <h4><svg><use href="#i-info"/></svg>KETERANGAN</h4>
           <p>Dimohon hadir 15 menit sebelum acara dimulai.<br>Konfirmasi kehadiran melalui WA :</p>
-          <div class="contact-line"><p>Letkol Arh Rizky Prima<br><span style="font-weight:600;color:var(--muted)">0812-3468-8215</span></p><a class="wa-link" data-wa="0" target="_blank" rel="noopener" aria-label="WhatsApp Letkol Arh Rizky Prima"><svg><use href="#i-wa"/></svg></a></div>
+          <div class="contact-line"><p>Letkol Arh Rizki Prima<br><span style="font-weight:600;color:var(--muted)">0812-3468-8215</span></p><a class="wa-link" data-wa="0" target="_blank" rel="noopener" aria-label="WhatsApp Letkol Arh Rizki Prima"><svg><use href="#i-wa"/></svg></a></div>
           <div class="contact-line"><p>Mayor Arh Ina R<br><span style="font-weight:600;color:var(--muted)">0812-6000-653</span></p><a class="wa-link" data-wa="1" target="_blank" rel="noopener" aria-label="WhatsApp Mayor Arh Ina R"><svg><use href="#i-wa"/></svg></a></div>
         </div>
         <div class="inv-box rv d1">
@@ -448,7 +446,7 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
         <a class="btn" id="tokenBtn"><svg><use href="#i-send"/></svg>KONFIRMASI &amp; KARTU QR</a>
       </div>
       <div class="cp-grid">
-        <div class="cp rv"><div class="av">RP</div><div><div class="nm">Letkol Arh Rizky Prima</div><div class="ph">0812-3468-8215</div></div><a class="btn wa wa-link" data-wa="0" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>CHAT</a></div>
+        <div class="cp rv"><div class="av">RP</div><div><div class="nm">Letkol Arh Rizki Prima</div><div class="ph">0812-3468-8215</div></div><a class="btn wa wa-link" data-wa="0" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>CHAT</a></div>
         <div class="cp rv d1"><div class="av">IR</div><div><div class="nm">Mayor Arh Ina R</div><div class="ph">0812-6000-653</div></div><a class="btn wa wa-link" data-wa="1" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>CHAT</a></div>
       </div>
       <form class="rsvp rv" id="rsvpForm">
@@ -457,7 +455,7 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
         <div class="field"><label for="fSatuan">Satuan / Instansi</label><input id="fSatuan" placeholder="cth. Yonarhanud 3/YBY"></div>
         <div class="field"><label>Kehadiran</label><div class="choice"><input type="radio" name="hadir" id="h1" value="Hadir" checked><label for="h1">Hadir</label><input type="radio" name="hadir" id="h2" value="Berhalangan Hadir"><label for="h2">Berhalangan</label></div></div>
         <div class="field"><label for="fJml">Jumlah</label><select id="fJml"><option>1 orang</option><option>2 orang (beserta pendamping)</option></select></div>
-        <div class="field"><label for="fKe">Kirim ke</label><select id="fKe"><option value="0">Letkol Arh Rizky Prima</option><option value="1">Mayor Arh Ina R</option></select></div>
+        <div class="field"><label for="fKe">Kirim ke</label><select id="fKe"><option value="0">Letkol Arh Rizki Prima</option><option value="1">Mayor Arh Ina R</option></select></div>
         <div class="field"><label for="fUcapan">Ucapan untuk HUT ke-80</label><textarea id="fUcapan" placeholder="Dirgahayu Arhanud TNI AD ke-80..."></textarea></div>
         <button class="btn wa" type="submit"><svg><use href="#i-wa"/></svg>KIRIM KONFIRMASI</button>
       </form>
@@ -526,7 +524,7 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
 /* ================== KONFIGURASI ================== */
 const CONFIG = {
   kontak : [
-    {nama:"Letkol Arh Rizky Prima", wa:"6281234688215"},
+    {nama:"Letkol Arh Rizki Prima", wa:"6281234688215"},
     {nama:"Mayor Arh Ina R",        wa:"628126000653"}
   ],
   mulai  : "2026-11-17T08:00:00+07:00",
