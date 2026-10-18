@@ -85,6 +85,13 @@
       -webkit-background-clip:text;background-clip:text;color:transparent}
   }
   button:not(.b2){box-shadow:0 2px 14px rgba(216,170,43,.25)}
+  /* === Tambahan: tombol Lampiran Undangan Digital === */
+  .lampiran-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:min(96vw,720px);margin-top:10px;
+        padding:12px 14px;border-radius:12px;text-decoration:none;color:#0b1d10;font-weight:900;
+        font-size:clamp(14px,4.2vw,17px);letter-spacing:.5px;border:1px solid #f1c63d;
+        background:linear-gradient(180deg,#f6e7a6,#e9d069 50%,#c3aa56);box-shadow:0 0 18px rgba(216,170,43,.25)}
+  .lampiran-btn small{display:block;font-weight:700;font-size:.72em;opacity:.8;letter-spacing:0}
+  @media(min-width:768px){.lampiran-btn{width:min(94vw,780px)}}
 </style>
 
 <script>
@@ -2456,6 +2463,9 @@ if(RPC_URL||!(window.google&&window.google.script&&window.google.script.run)){
       <div class="welcome-big">PUSSENARHANUD</div>
     </div>
 
+    <!-- Tambahan: Lampiran Undangan Digital -->
+    <a class="lampiran-btn" id="btnLampiran" href="lampiran"><span style="font-size:1.4em">📜</span><span>LIHAT LAMPIRAN UNDANGAN DIGITAL<small>Hymne Arhanud · Waktu &amp; Lokasi · Sejarah</small></span></a>
+
     <div class="card" id="kartu">
       <div class="title">KONFIRMASI KEHADIRAN</div>
       <div class="subtitle">HUT KE-80 ARHANUD TNI AD</div>
@@ -2670,6 +2680,21 @@ function cekStatus(senyap){
   }).statusKonfirmasi(TOK);
 }
 
+</script>
+<script>
+/* Tambahan: tautan Lampiran Undangan Digital (membawa nama & token tamu) */
+(function(){
+  var a=document.getElementById("btnLampiran"); if(!a) return;
+  function buat(){
+    var p=new URLSearchParams(location.search), q=[];
+    var el=document.getElementById("nama");
+    var n=((el&&el.value)||p.get("nama")||"").trim(), t=(p.get("t")||"").trim();
+    if(n) q.push("to="+encodeURIComponent(n));
+    if(t) q.push("t="+encodeURIComponent(t));
+    a.href="lampiran"+(q.length?"?"+q.join("&"):"");
+  }
+  buat(); a.addEventListener("click",buat); a.addEventListener("touchstart",buat,{passive:true});
+})();
 </script>
 </body>
 </html>
