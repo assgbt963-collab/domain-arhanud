@@ -164,28 +164,6 @@ p.body{font-weight:500;font-size:15.5px;color:rgba(255,255,255,.88)}
 .cd-done{display:none;font-weight:800;font-size:19px;color:var(--gold);margin-top:22px}
 .btn-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px}
 
-/* ====== RUNDOWN ACARA ====== */
-.rd-tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:440px;margin:0 auto 16px}
-.rd-tab{padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.22);color:var(--muted);font:inherit;font-weight:800;font-size:11.5px;letter-spacing:.04em;cursor:pointer;transition:.2s}
-.rd-tab.active,.rd-tab:hover{background:linear-gradient(180deg,#fbf0b8,#e9d069);color:#1b2a0f;border-color:#e9d069}
-.rd-card{max-width:460px;margin:0 auto 20px;border-radius:18px;overflow:hidden;border:1px solid rgba(233,208,105,.38);background:rgba(9,28,16,.72);box-shadow:0 14px 32px rgba(0,0,0,.32);text-align:left}
-.rd-card:last-child{margin-bottom:0}
-.rd-head{padding:14px 16px;background:linear-gradient(180deg,rgba(233,208,105,.22),rgba(233,208,105,.06));border-bottom:1px solid rgba(233,208,105,.32);text-align:center}
-.rd-head h3{font-weight:800;font-size:14px;letter-spacing:.06em;color:var(--gold);line-height:1.35;text-transform:uppercase}
-.rd-head p{font-weight:600;font-size:11.5px;color:var(--muted);margin-top:3px}
-.rd-table-wrap{overflow-x:auto}
-table.rd-tbl{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.42}
-table.rd-tbl thead th{background:linear-gradient(180deg,#3d7a35,#2c5e26);color:#fff;font-weight:800;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:9px 7px;border-bottom:1px solid rgba(233,208,105,.35);text-align:center}
-table.rd-tbl thead th:last-child{text-align:left;padding-left:10px}
-table.rd-tbl tbody tr{border-bottom:1px solid rgba(255,255,255,.08)}
-table.rd-tbl tbody tr:nth-child(odd){background:rgba(255,255,255,.03)}
-table.rd-tbl tbody tr:nth-child(even){background:rgba(0,0,0,.14)}
-table.rd-tbl tbody td{padding:8px 6px;vertical-align:middle;font-weight:600;color:rgba(255,255,255,.93)}
-table.rd-tbl td.c-no{width:30px;text-align:center;font-weight:800;color:var(--gold);font-size:11.5px}
-table.rd-tbl td.c-wkt{width:88px;text-align:center;white-space:nowrap;font-weight:800;color:#fbf0b8;font-size:11.5px}
-table.rd-tbl td.c-dur{width:46px;text-align:center;white-space:nowrap;color:var(--muted);font-size:11.5px}
-table.rd-tbl td.c-keg{padding:8px 10px;text-align:left;font-weight:600}
-
 /* ====== HYMNE ====== */
 #hymne{background:var(--cover-grad)}
 #hymne .sheen{position:absolute;inset:0;background:linear-gradient(180deg,rgba(19,54,32,.0),rgba(19,54,32,.55));pointer-events:none}
@@ -288,9 +266,9 @@ footer{padding:20px 20px 96px;text-align:center;font-weight:600;font-size:11px;l
 /* ====== NAV & FAB ====== */
 nav.bnav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:50;display:flex;gap:2px;padding:5px;border-radius:999px;background:rgba(13,40,23,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(233,208,105,.35);box-shadow:0 10px 30px rgba(0,0,0,.5)}
 @media(min-width:1000px){nav.bnav{left:auto;right:240px;transform:translateX(50%)}}
-nav.bnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;width:50px;height:46px;border-radius:999px;text-decoration:none;color:var(--muted);transition:.2s}
+nav.bnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;width:56px;height:46px;border-radius:999px;text-decoration:none;color:var(--muted);transition:.2s}
 nav.bnav a svg{width:18px;height:18px}
-nav.bnav a span{font-size:9px;font-weight:700;letter-spacing:.04em;margin-top:2px}
+nav.bnav a span{font-size:9.5px;font-weight:700;letter-spacing:.04em;margin-top:2px}
 nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180deg,#fbf0b8,#e9d069)}
 .fab{position:fixed;right:14px;top:calc(14px + env(safe-area-inset-top));z-index:55;width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);background:rgba(13,40,23,.92);display:none;place-items:center;box-shadow:0 6px 16px rgba(0,0,0,.4)}
 @media(min-width:1000px){.fab{right:24px}}
@@ -392,94 +370,7 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
       <div class="cd-done" id="cdDone">Dirgahayu Arhanud TNI AD ke-80!</div>
       <div class="btn-row rv">
         <a class="btn" id="calBtn" target="_blank" rel="noopener"><svg><use href="#i-cal"/></svg>SIMPAN KE KALENDER</a>
-        <a class="btn line" href="#rundown"><svg><use href="#i-clock"/></svg>RUNDOWN ACARA</a>
         <a class="btn line" href="#lokasi"><svg><use href="#i-pin"/></svg>LIHAT LOKASI</a>
-      </div>
-    </section>
-
-    <!-- ===== RUNDOWN ACARA ===== -->
-    <section id="rundown" class="flat">
-      <div class="kicker rv">Rangkaian Kegiatan</div>
-      <h2 class="ttl rv">Rundown Acara</h2>
-      <div class="hr rv"></div>
-
-      <div class="rd-tabs rv" id="rdTabs">
-        <button type="button" class="rd-tab active" onclick="filterRundown('all',this)">Semua Rangkaian</button>
-        <button type="button" class="rd-tab" onclick="filterRundown('tradisi',this)">1. Tradisi Korps Pati</button>
-        <button type="button" class="rd-tab" onclick="filterRundown('syukuran',this)">2. Acara Syukuran</button>
-      </div>
-
-      <!-- TABEL 1: RUNDOWN ACARA TRADISI LAPORAN KORPS PATI ARHANUD -->
-      <div class="rd-card rv" id="rdTradisi">
-        <div class="rd-head">
-          <h3>Rundown Acara Tradisi Laporan Korps Pati Arhanud</h3>
-          <p>Selasa, 17 November 2026 · Pukul 06.30 – 09.30 WIB</p>
-        </div>
-        <div class="rd-table-wrap">
-          <table class="rd-tbl">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Waktu</th>
-                <th>Durasi</th>
-                <th>Kegiatan &amp; Uraian</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td class="c-no">1</td><td class="c-wkt">06.30 - 07.15</td><td class="c-dur">45'</td><td class="c-keg">Para Pati Peserta Tradisi Tiba di Pussenarhanud</td></tr>
-              <tr><td class="c-no">2</td><td class="c-wkt">07.15 - 07.30</td><td class="c-dur">15'</td><td class="c-keg">Penjelasan Singkat mekanisme pelaksanaan Tradisi oleh penyelenggara kepada Peserta Tradisi</td></tr>
-              <tr><td class="c-no">3</td><td class="c-wkt">07.30 - 07.55</td><td class="c-dur">25'</td><td class="c-keg">Persiapan (Peserta Tradisi menuju tempat acara)</td></tr>
-              <tr><td class="c-no">4</td><td class="c-wkt">07.55 - 08.00</td><td class="c-dur">5'</td><td class="c-keg">Danpussenarhanud beserta Istri menuju tempat acara Tradisi</td></tr>
-              <tr><td class="c-no">5</td><td class="c-wkt">08.00</td><td class="c-dur">-</td><td class="c-keg">Danpussenarhanud beserta Istri tiba di tempat Acara dan menempati meja kehormatan</td></tr>
-              <tr><td class="c-no">6</td><td class="c-wkt">08.00 - 08.05</td><td class="c-dur">5'</td><td class="c-keg">Menyanyikan lagu Mars Arhanud</td></tr>
-              <tr><td class="c-no">7</td><td class="c-wkt">08.05 - 08.07</td><td class="c-dur">2'</td><td class="c-keg">Laporan Perwira Tertua</td></tr>
-              <tr><td class="c-no">8</td><td class="c-wkt">08.07 - 08.42</td><td class="c-dur">35'</td><td class="c-keg">Pelaksanaan Tradisi Laporan Korps Pati Arhanud</td></tr>
-              <tr><td class="c-no">9</td><td class="c-wkt">08.42 - 08.47</td><td class="c-dur">5'</td><td class="c-keg">Pernyataan Pengukuhan Korps Pati</td></tr>
-              <tr><td class="c-no">10</td><td class="c-wkt">08.47 - 08.57</td><td class="c-dur">10'</td><td class="c-keg">Sambutan Danpussenarhanud</td></tr>
-              <tr><td class="c-no">11</td><td class="c-wkt">08.57 - 09.00</td><td class="c-dur">3'</td><td class="c-keg">Do'a</td></tr>
-              <tr><td class="c-no">12</td><td class="c-wkt">09.00 - 09.03</td><td class="c-dur">3'</td><td class="c-keg">Menyanyikan Hymne Arhanud</td></tr>
-              <tr><td class="c-no">13</td><td class="c-wkt">09.03 - 09.05</td><td class="c-dur">2'</td><td class="c-keg">Laporan Perwira Tertua</td></tr>
-              <tr><td class="c-no">14</td><td class="c-wkt">09.05 - 09.09</td><td class="c-dur">4'</td><td class="c-keg">Acara Tambahan, Foto Bersama Danpussenarhanud beserta Istri dan Seluruh peserta Tradisi</td></tr>
-              <tr><td class="c-no">15</td><td class="c-wkt">09.09 - 09.30</td><td class="c-dur">21'</td><td class="c-keg">Danpussenarhanud beserta istri diikuti seluruh PJU &amp; Peserta Tradisi Kembali menuju <i>Lobby</i> untuk melaksanakan Transit</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- TABEL 2: RUNDOWN ACARA SYUKURAN -->
-      <div class="rd-card rv" id="rdSyukuran">
-        <div class="rd-head">
-          <h3>Rundown Acara Syukuran</h3>
-          <p>Selasa, 17 November 2026 · Pukul 09.05 – 12.00 WIB</p>
-        </div>
-        <div class="rd-table-wrap">
-          <table class="rd-tbl">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Waktu</th>
-                <th>Durasi</th>
-                <th>Kegiatan &amp; Uraian</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td class="c-no">1</td><td class="c-wkt">09.05 - 09.30</td><td class="c-dur">25'</td><td class="c-keg">Persiapan</td></tr>
-              <tr><td class="c-no">2</td><td class="c-wkt">09.30 - 09.40</td><td class="c-dur">10'</td><td class="c-keg">Danpussenarhanud Beserta PJU &amp; Tamu VIP menuju tempat acara</td></tr>
-              <tr><td class="c-no">3</td><td class="c-wkt">09.40 - 09.45</td><td class="c-dur">5'</td><td class="c-keg">Pembukaan Oleh MC</td></tr>
-              <tr><td class="c-no">4</td><td class="c-wkt">09.45 - 09.55</td><td class="c-dur">10'</td><td class="c-keg">Penayangan Video Testimoni</td></tr>
-              <tr><td class="c-no">5</td><td class="c-wkt">09.55 - 10.00</td><td class="c-dur">5'</td><td class="c-keg">Penayangan Video Rangkaian HUT ke-80 Arhanud</td></tr>
-              <tr><td class="c-no">6</td><td class="c-wkt">10.00 - 10.07</td><td class="c-dur">7'</td><td class="c-keg">Penayangan Video Sejarah Arhanud</td></tr>
-              <tr><td class="c-no">7</td><td class="c-wkt">10.07 - 10.15</td><td class="c-dur">8'</td><td class="c-keg">Penayangan Video Selayang Pandang Pussenarhanud</td></tr>
-              <tr><td class="c-no">8</td><td class="c-wkt">10.15 - 10.35</td><td class="c-dur">20'</td><td class="c-keg">Tradisi Penembakan Kehormatan dan Penyerahan Panah “Brahmastra”</td></tr>
-              <tr><td class="c-no">9</td><td class="c-wkt">10.35 - 10.45</td><td class="c-dur">5'</td><td class="c-keg">Sambutan Perwakilan Sesepuh Arhanud</td></tr>
-              <tr><td class="c-no">10</td><td class="c-wkt">10.45 - 10.50</td><td class="c-dur">5'</td><td class="c-keg">Sambutan Danpussenarhanud</td></tr>
-              <tr><td class="c-no">11</td><td class="c-wkt">10.50 - 10.53</td><td class="c-dur">7'</td><td class="c-keg">Pemotongan Tumpeng</td></tr>
-              <tr><td class="c-no">12</td><td class="c-wkt">10.53 - 11.00</td><td class="c-dur">3'</td><td class="c-keg">Do'a</td></tr>
-              <tr><td class="c-no">13</td><td class="c-wkt">11.00 - 12.00</td><td class="c-dur">60'</td><td class="c-keg">Acara Ramah Tamah &amp; Hiburan diawali dengan penyerahan tali asih kepada Bapak Asuh Satjar Arhanud</td></tr>
-              <tr><td class="c-no">14</td><td class="c-wkt">12.00</td><td class="c-dur">-</td><td class="c-keg">Foto Bersama dan Acara Selesai</td></tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </section>
 
@@ -627,7 +518,6 @@ nav.bnav a.active,nav.bnav a:hover{color:#1b2a0f;background:linear-gradient(180d
 <nav class="bnav" aria-label="Navigasi">
   <a href="#undangan" class="active"><svg><use href="#i-mail"/></svg><span>Undangan</span></a>
   <a href="#waktu"><svg><use href="#i-cal"/></svg><span>Waktu</span></a>
-  <a href="#rundown"><svg><use href="#i-clock"/></svg><span>Rundown</span></a>
   <a href="#hymne"><svg><use href="#i-music"/></svg><span>Hymne</span></a>
   <a href="#lokasi"><svg><use href="#i-pin"/></svg><span>Lokasi</span></a>
   <a href="#rsvp"><svg><use href="#i-send"/></svg><span>RSVP</span></a>
@@ -690,20 +580,8 @@ try{
     if(iJam) iJam.innerHTML = 'pukul <span class="hl">09.00 WIB</span>';
     const wJam = document.getElementById('waktuJam');
     if(wJam) wJam.innerHTML = 'Pukul 09.00 WIB<br><small style="font-weight:600;color:var(--muted)">Hadir 15 menit sebelumnya</small>';
-    const rdTrad = document.getElementById('rdTradisi');
-    if(rdTrad) rdTrad.style.display = 'none';
-    const rdTabs = document.getElementById('rdTabs');
-    if(rdTabs) rdTabs.style.display = 'none';
   }
 }catch(e){}
-function filterRundown(mode, btn){
-  document.querySelectorAll('#rdTabs .rd-tab').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  const t = document.getElementById('rdTradisi');
-  const s = document.getElementById('rdSyukuran');
-  if(t) t.style.display = (mode === 'syukuran') ? 'none' : '';
-  if(s) s.style.display = (mode === 'tradisi') ? 'none' : '';
-}
 
 // ---------- Audio Hymne ----------
 const bgm=document.getElementById('bgm'), fab=document.getElementById('fab'), player=document.getElementById('player'), disc=document.getElementById('disc');
